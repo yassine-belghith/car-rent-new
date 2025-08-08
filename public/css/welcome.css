@@ -1,0 +1,353 @@
+.header {
+    min-height: 70px;
+    height: auto;
+}
+/* Video Banner */
+.video-banner {
+    position: relative;
+    width: 100%;
+    height: 90vh;
+    overflow: hidden;
+    margin-top: 70px;
+}
+
+.video-banner video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    padding: 0 20px;
+}
+
+.video-overlay h1 {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.video-overlay .btn {
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.video-overlay .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.welcome {
+    margin-top: 0;
+    width: 100%;
+    min-height: 80vh;
+    padding: 0;
+    position: relative;
+}
+
+.welcome .item {
+    width: 100%;
+    height: 100%;
+    min-height: 80vh;
+    background-image: url('../assets/bm.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 2rem 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome .item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+.welcome .item {
+    background-color: rgba(0, 0, 0, 0.361);
+    width: 100%;
+    height: 100%;
+}
+.welcome .titre {
+    font-size: 70px;
+}
+.welcome p {
+    font-size: 20px;
+}
+.about {
+    background-color: aliceblue;
+    width: 100%
+}
+.about-container img {
+    width: 52%;
+    height: 400px;
+    object-fit: cover;
+    object-position: center;
+}
+.about-container .content {
+    width: 45%;
+    height: 400px;
+}
+.about-container .content p {
+    text-align: justify;
+}
+.innovation {
+    background-color: white;
+    width: 100%;
+}
+.innovation .item .number {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+.products {
+    background-color: rgba(240, 255, 255, 0.721);
+}
+.products .all-products .item {
+    width: 275px;
+    height: 375px;
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.361);
+}
+.products .all-products .item img {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+}
+.text-justify {
+    text-align: justify;
+}
+.testimony {
+    background-color: rgba(250, 250, 244, 0.724);
+}
+.testimony .testimony-item
+{
+    width: 275px;
+    height: 350px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.361);
+}
+.testimony .testimony-text-container{
+    height: 58%;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.testimony .testimony-user{
+    height: 40%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.testimony .testimony-user-logo{
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid white;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+.testimony .testimony-user-logo:hover {
+    transform: scale(1.05);
+}
+.newsletter {
+    background-color: white;
+}
+.newsletter-form{
+    position: relative;
+    width: 80%;
+    height: 75px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.newsletter-form >input[type="email"]{
+    position: relative;
+    width: 75%;
+    height: 50px;
+    font-size: 25px;
+    text-align: center;
+    outline: none;
+    border: none;
+}
+.newsletter-form >input[type="email"]::placeholder{
+    font-size: 25px;
+    text-align: center;
+}
+input[type="submit"]{
+    position: relative;
+    width: 25%;
+    height: 50px;
+    outline: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    background-color: black;
+}
+.testimony {
+    background-color: rgba(250, 250, 244, 0.724);
+}
+.testimony .testimony-item {
+    width: 275px;
+    height: 350px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.361);
+}
+.testimony .testimony-text-container {
+    height: 58%;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.testimony .testimony-user {
+    height: 50%;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.testimony .testimony-user-logo {
+    width: 150px;
+    height: 150px;
+    height: 100px;  /* Increased from 75px */
+    object-fit: cover;
+    border-radius: 50%;  /* Changed from 50px to make it perfectly round */
+    border: 3px solid white;  /* Added border for better visibility */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);  /* Added subtle shadow */
+    transition: transform 0.3s ease;  /* Smooth hover effect */
+}
+
+.testimony .testimony-user-logo:hover {
+    transform: scale(1.05);  /* Slight scale on hover */
+}
+.newsletter {
+    background-color: white;
+}
+.newsletter-form {
+    position: relative;
+    width: 80%;
+    height: 75px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.newsletter-form>input[type="email"] {
+    position: relative;
+    width: 75%;
+    height: 50px;
+    font-size: 25px;
+    text-align: center;
+    outline: none;
+    border: none;
+}
+.newsletter-form>input[type="email"]::placeholder {
+    font-size: 25px;
+    text-align: center;
+}
+input[type="submit"] {
+    position: relative;
+    width: 25%;
+    height: 50px;
+    outline: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    background-color: black;
+}
+
+/* Circular Testimonial Header */
+.testimonial-header {
+    position: relative;
+    margin: 3rem 0;
+    z-index: 1;
+}
+
+.testimonial-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #40aaf1 0%, #2980b9 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.testimonial-circle::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    z-index: -1;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.testimonial-circle h2 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.3;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+/* Adjust testimonial items spacing */
+.testimony {
+    position: relative;
+    overflow: hidden;
+}
+
+.testimony .testimony-item {
+    margin-top: 4rem;
+}
