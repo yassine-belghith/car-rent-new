@@ -21,8 +21,10 @@ class Transfer extends Model
         'driver_id',
         'driver_confirmation_status',
         'car_id',
-        'pickup_location_id',
-        'dropoff_location_id',
+        'pickup_latitude',
+        'pickup_longitude',
+        'dropoff_latitude',
+        'dropoff_longitude',
         'pickup_datetime',
         'return_datetime',
         'flight_number',
@@ -80,22 +82,6 @@ class Transfer extends Model
     public function car()
     {
         return $this->belongsTo(Car::class);
-    }
-
-    /**
-     * Get the pickup location for the transfer.
-     */
-    public function pickupLocation()
-    {
-        return $this->belongsTo(Destination::class, 'pickup_location_id');
-    }
-
-    /**
-     * Get the dropoff location for the transfer.
-     */
-    public function dropoffLocation()
-    {
-        return $this->belongsTo(Destination::class, 'dropoff_location_id');
     }
 
     /**

@@ -11,8 +11,8 @@ Un membre de notre équipe examinera votre demande sous peu pour la confirmer et
 
 - **Numéro de référence :** {{ $transfer->reference_number }}
 - **Date et heure :** {{ $transfer->pickup_datetime ? $transfer->pickup_datetime->format('d/m/Y à H:i') : 'Non spécifiée' }}
-- **Lieu de prise en charge :** {{ $transfer->pickupLocation->name }}
-- **Lieu de dépose :** {{ $transfer->dropoffLocation->name }}
+- **Lieu de prise en charge (Lat, Lng) :** {{ $transfer->pickup_latitude }}, {{ $transfer->pickup_longitude }}
+- **Lieu de dépose (Lat, Lng) :** {{ $transfer->dropoff_latitude }}, {{ $transfer->dropoff_longitude }}
 - **Nombre de passagers :** {{ $transfer->passenger_count }}
 
 Si vous avez des questions, n'hésitez pas à nous contacter.

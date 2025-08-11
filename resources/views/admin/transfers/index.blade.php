@@ -43,7 +43,8 @@ $statusClasses = [
                                 <tr>
                                     <th>Client</th>
                                     <th>Chauffeur</th>
-                                    <th>Départ & Arrivée</th>
+                                    <th>Départ (Lat, Lng)</th>
+                                    <th>Arrivée (Lat, Lng)</th>
                                     <th>Date</th>
                                     <th class="text-center">Statut</th>
                                     <th class="text-end">Actions</th>
@@ -54,10 +55,8 @@ $statusClasses = [
                                     <tr>
                                         <td>{{ $transfer->user->name ?? 'N/A' }}</td>
                                         <td>{{ $transfer->driver->name ?? 'Non assigné' }}</td>
-                                        <td>
-                                            <div>{{ $transfer->pickupLocation->name ?? 'N/A' }}</div>
-                                            <small class="text-muted">vers {{ $transfer->dropoffLocation->name ?? 'N/A' }}</small>
-                                        </td>
+                                        <td>{{ $transfer->pickup_latitude }}, {{ $transfer->pickup_longitude }}</td>
+                                        <td>{{ $transfer->dropoff_latitude }}, {{ $transfer->dropoff_longitude }}</td>
                                         <td>{{ $transfer->pickup_datetime ? $transfer->pickup_datetime->format('d/m/Y H:i') : 'N/A' }}</td>
                                         <td class="text-center">
                                             <span class="badge {{ $statusClasses[$transfer->status] ?? 'bg-secondary-soft text-secondary' }}">

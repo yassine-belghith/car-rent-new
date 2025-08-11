@@ -33,10 +33,11 @@
                             <tr>
                                 <th>Référence</th>
                                 <th>Date</th>
-                                <th>De</th>
-                                <th>À</th>
+                                <th>Départ (Lat, Lng)</th>
+                                <th>Arrivée (Lat, Lng)</th>
                                 <th>Statut</th>
                                 <th>Prix</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,17 +45,16 @@
                                 <tr>
                                     <td><strong>{{ $transfer->reference_number }}</strong></td>
                                     <td>{{ $transfer->pickup_datetime->format('d/m/Y H:i') }}</td>
-                                    <td>{{ $transfer->pickupLocation->name ?? 'N/A' }}</td>
-                                    <td>{{ $transfer->dropoffLocation->name ?? 'N/A' }}</td>
+                                    <td>{{ number_format($transfer->pickup_latitude, 5) }}, {{ number_format($transfer->pickup_longitude, 5) }}</td>
+                                    <td>{{ number_format($transfer->dropoff_latitude, 5) }}, {{ number_format($transfer->dropoff_longitude, 5) }}</td>
                                     <td>
                                         <span class="badge {{ $transfer->status_badge_class }}">{{ $transfer->status_label }}</span>
                                     </td>
+                                    <td>{{ $transfer->price > 0 ? number_format($transfer->price, 2, ',', ' ') . ' €' : 'En attente' }}</td>
                                     <td>
-                                        @if($transfer->price > 0)
-                                            {{ number_format($transfer->price, 2, ',', ' ') }} €
-                                        @else
-                                            <span class="text-muted">En attente</span>
-                                        @endif
+                                        <a href="{{ route('transfers.invoice', $transfer) }}" class="btn btn-sm btn-outline-secondary" title="Télécharger la facture">
+                                            <i class="fas fa-file-invoice"></i> Facture
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

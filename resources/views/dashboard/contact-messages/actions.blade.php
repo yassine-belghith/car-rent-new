@@ -4,7 +4,7 @@
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <li>
-            <a class="dropdown-item" href="{{ route('dashboard.contact-messages.show', $message) }}">
+            <a class="dropdown-item" href="{{ route('dashboard.contact.messages.show', $message) }}">
                 <i class="fas fa-eye me-2"></i> Voir
             </a>
         </li>
@@ -15,7 +15,7 @@
         </li>
         <li><hr class="dropdown-divider"></li>
         <li>
-            <form action="{{ route('dashboard.contact-messages.destroy', $message) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">
+            <form action="{{ route('dashboard.contact.messages.destroy', $message) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="dropdown-item text-danger">

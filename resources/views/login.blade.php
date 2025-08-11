@@ -49,8 +49,8 @@
             </div>
             <div class="col-md-6">
                 <div class="d-flex justify-content-center">
-        <form class="w-100 my-5 px-5 py-3 form" method="POST" action="{{ route('user.login') }}">
-            @csrf
+        <form class="w-100 my-5 px-5 py-3 form" method="POST" action="{{ route('login.perform') }}">
+                @csrf
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Email</label>
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">

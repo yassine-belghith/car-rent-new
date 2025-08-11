@@ -32,7 +32,7 @@ $breadcrumbs = [
                             <i class="fas fa-users fa-2x text-gray-300"></i>
                         </div>
                     </div>
-                    <a href="{{ route('dashboard.users') }}" class="btn btn-sm btn-primary mt-3">Gérer</a>
+                    <a href="{{ route('dashboard.users.index') }}" class="btn btn-sm btn-primary mt-3">Gérer</a>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@ $breadcrumbs = [
                             <i class="fas fa-car fa-2x text-gray-300"></i>
                         </div>
                     </div>
-                    <a href="{{ route('dashboard.cars') }}" class="btn btn-sm btn-success mt-3">Voir la flotte</a>
+                    <a href="{{ route('dashboard.cars.index') }}" class="btn btn-sm btn-success mt-3">Voir la flotte</a>
                 </div>
             </div>
         </div>
@@ -274,158 +274,116 @@ $breadcrumbs = [
 </div>
 
 <style>
-    /* Base Card Styles */
+    :root {
+        --primary-color: #4A90E2;
+        --success-color: #50E3C2;
+        --info-color: #57BEE2;
+        --warning-color: #F5A623;
+        --light-gray: #f7f9fc;
+        --medium-gray: #e3e6f0;
+        --dark-gray: #5a5c69;
+        --text-color: #333;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --card-hover-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
     .card {
-        transition: all 0.3s ease;
         border: none;
-        border-radius: 0.5rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         overflow: hidden;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
     }
-    
+
     .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1.5rem 0.5rem rgba(58, 59, 69, 0.15) !important;
+        transform: translateY(-5px);
+        box-shadow: var(--card-hover-shadow);
     }
-    
-    /* Card Header */
-    .card-header {
-        background-color: #f8f9fc;
-        border-bottom: 1px solid #e3e6f0;
-        padding: 1rem 1.35rem;
+
+    .card .card-body {
+        padding: 1.5rem;
     }
-    
-    /* Action Cards */
-    .action-card {
-        border: 1px solid #e3e6f0;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
+
+    .border-left-primary {
+        border-left: 4px solid var(--primary-color) !important;
     }
-    
-    .action-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1.5rem 0.5rem rgba(58, 59, 69, 0.1) !important;
+
+    .text-primary {
+        color: var(--primary-color) !important;
     }
-    
-    .action-card .card-footer {
-        background-color: #f8f9fc;
-        transition: all 0.3s ease;
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
     }
-    
-    .action-card:hover .card-footer {
-        background-color: #f1f3f9;
+
+    .border-left-success {
+        border-left: 4px solid var(--success-color) !important;
     }
-    
-    /* Icon Shapes */
-    .icon-shape {
-        width: 3rem;
-        height: 3rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.5rem;
+
+    .text-success {
+        color: var(--success-color) !important;
     }
-    
-    /* Activity Feed */
-    .hover-bg-light {
-        transition: all 0.2s ease;
+
+    .btn-success {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
     }
-    
-    .hover-bg-light:hover {
-        background-color: #f8f9fc !important;
+
+    .border-left-info {
+        border-left: 4px solid var(--info-color) !important;
     }
-    
-    /* Status Badges */
-    .badge {
-        font-weight: 500;
-        padding: 0.35em 0.65em;
-        font-size: 0.75em;
+
+    .text-info {
+        color: var(--info-color) !important;
     }
-    
-    /* Buttons */
-    .btn {
-        border-radius: 0.35rem;
-        font-weight: 500;
-        padding: 0.375rem 0.75rem;
-        font-size: 0.85rem;
+
+    .btn-info {
+        background-color: var(--info-color);
+        border-color: var(--info-color);
     }
-    
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
+
+    .border-left-warning {
+        border-left: 4px solid var(--warning-color) !important;
     }
-    
-    /* Avatar */
-    .avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: #fff;
-        background-color: #4e73df;
-        border-radius: 50%;
+
+    .text-warning {
+        color: var(--warning-color) !important;
     }
-    
-    /* Text Utilities */
+
+    .btn-warning {
+        background-color: var(--warning-color);
+        border-color: var(--warning-color);
+    }
+
+    .text-gray-800 {
+        color: var(--dark-gray) !important;
+    }
+
     .text-xs {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
     }
-    
-    .text-sm {
-        font-size: 0.85rem;
+
+    .h5 {
+        font-weight: 700;
     }
-    
-    /* Custom Shadows */
-    .shadow-sm {
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
+
+    .action-card {
+        border: 1px solid var(--medium-gray);
     }
-    
-    /* Custom Backgrounds */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+
+    .action-card:hover .card-footer {
+        background-color: var(--light-gray);
     }
-    
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .card-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .card-header .btn {
-            margin-top: 0.5rem;
-            align-self: flex-end;
-        }
-    }
-    
-    /* Animation for cards */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .card {
-        animation: fadeIn 0.5s ease-out forwards;
-    }
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #d1d3e2;
-        border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #b7b9cc;
+
+    .icon-shape {
+        width: 3.5rem;
+        height: 3.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
     }
 </style>
 @endsection

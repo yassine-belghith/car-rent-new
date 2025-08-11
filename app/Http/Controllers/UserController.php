@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Location;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -68,25 +69,57 @@ class UserController extends Controller
         return view('dashboard.users', ['users' => $users]); // Envoie les utilisateurs à la vue
     }
 
+    /**
+     * Make a user admin
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function makeAdmin($id)
     {
         $user = User::findOrFail($id);
-        $user->update(['role' => 'admin']);
+        $user->role = 'admin';
+        $user->save();
 
-        return redirect()->route('dashboard.users')->with('success', 'Utilisateur nommé administrateur avec succès!');
+        return redirect()->route('dashboard.users.index')
+            ->with('success', 'Les droits d\'administrateur ont été attribués avec succès.');
     }
 
+    /**
+     * Remove admin rights from a user
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function removeAdmin($id)
     {
         $user = User::findOrFail($id);
-        $user->update(['role' => 'user']);
+        
+        // Prevent removing admin rights from the last admin
+        $adminCount = User::where('role', 'admin')->count();
+        if ($adminCount <= 1) {
+            return redirect()->route('dashboard.users.index')
+                ->with('error', 'Impossible de retirer les droits d\'administrateur. Il doit y avoir au moins un administrateur.');
+        }
+        
+        $user->role = 'user';
+        $user->save();
 
-        return redirect()->route('dashboard.users')->with('success', 'Dénomination de l\'administrateur réussie!');
+        return redirect()->route('dashboard.users.index')
+            ->with('success', 'Les droits d\'administrateur ont été retirés avec succès.');
     }
-
+    
+    /**
+     * Make a user a driver
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function makeDriver($id)
     {
         $user = User::findOrFail($id);
+        $user->is_driver = true;
+        $user->save();
         $user->update(['is_driver' => true]);
 
         return redirect()->route('dashboard.users')->with('success', 'Utilisateur défini comme chauffeur avec succès!');
@@ -99,14 +132,25 @@ class UserController extends Controller
 
         return redirect()->route('dashboard.users')->with('success', 'Le statut de chauffeur a été retiré à l\'utilisateur avec succès!');
     }
-
-    public function rentals($id)
+    
+    /**
+     * Show the rentals for a specific user
+     *
+     * @param  int  $id
+     * @return \Illuminate\View\View
+     */
+    public function rentals(User $user)
     {
-        $user = User::with('rentals.car')->find($id);
+        $user->load('rentals.car');
+              $rentals = $user->rentals;
 
-        $rentals = $user->rentals;
+        $locations = $user->locations;
 
-        return view('rentals' , ['rentals' => $rentals]);
+        return view('users.rentals', [
+            'user' => $user,
+            'rentals' => $user->rentals()->with('car')->latest()->paginate(10),
+            'locations' => $locations
+        ]);
     }
 
     /**

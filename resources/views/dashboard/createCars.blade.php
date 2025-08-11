@@ -9,7 +9,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}" class="text-decoration-none">Tableau de bord</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('dashboard.cars') }}" class="text-decoration-none">Voitures</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('dashboard.cars.index') }}" class="text-decoration-none">Voitures</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Ajouter</li>
             </ol>
         </nav>
@@ -19,7 +19,7 @@
                 <div class="col-12">
                     <div class="card shadow-sm border-0">
                         <div class="card-body p-4">
-                            <form method="POST" action="{{ route('cars.create') }}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('dashboard.cars.create') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row g-4">
                                     <div class="col-md-6">
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <a href="{{ route('dashboard.cars') }}" class="btn btn-outline-secondary">
+                                            <a href="{{ route('dashboard.cars.index') }}" class="btn btn-outline-secondary">
                                                 <i class="fas fa-arrow-left me-2"></i>Retour
                                             </a>
                                             <button type="submit" class="btn btn-primary px-4">

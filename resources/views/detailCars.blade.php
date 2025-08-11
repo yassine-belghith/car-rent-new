@@ -30,32 +30,50 @@
                     <p class="text-center mt-5">Aucune réservation planifiée sur cette voiture</p>
                 @endforelse
             </div>
-            <form class="new-reservation" method="POST" action="{{ route('rental.create', ['carId' => $car->id ]) }}">
-                @csrf
-                <div class="mt-4">
-                    <label for="pickupDate">Date de prise en charge :</label>
-                    <input type="date" id="pickupDate" class="form-control" name="rental_date" />
+            @if(Auth::check() && Auth::user()->role === 'admin')
+                <div class="admin-reservation-link text-center">
+                    <p class="fs-5">Vous êtes connecté en tant qu'administrateur.</p>
+                    <a href="{{ route('dashboard.rentals.create') }}" class="btn btn-primary btn-lg mt-2">
+                        <i class="fas fa-plus-circle me-2"></i> Créer une location (Admin)
+                    </a>
                 </div>
-                <div class="mt-3">
-                    <label for="returnDate">Date de retour :</label>
-                    <input type="date" id="returnDate" class="form-control" name="return_date" />
-                </div>
-                @if(session('error'))
-                    <div class="mt-3 alert alert-danger">
-                        {{ session('error') }}
+            @else
+                <form class="new-reservation" method="POST" action="{{ route('rental.user.store', ['carId' => $car->id ]) }}">
+                    @csrf
+                    <div class="mt-4">
+                        <label for="pickupDate">Date de prise en charge :</label>
+                        <input type="date" id="pickupDate" class="form-control" name="rental_date" />
                     </div>
-                @endif
-                @if ($errors->reservationErrors->any())
-                    <div class="mt-3 alert alert-danger">
-                        <ul>
-                            @foreach ($errors->reservationErrors->all() as $error)
-                                <li>{{ $error }}</li>
+                    <div class="mt-3">
+                        <label for="returnDate">Date de retour :</label>
+                        <input type="date" id="returnDate" class="form-control" name="return_date" />
+                    </div>
+                    <div class="mt-3">
+                        <label for="driver_id">Chauffeur :</label>
+                        <select id="driver_id" class="form-control" name="driver_id">
+                            <option value="">Aucun</option>
+                            @foreach($drivers as $driver)
+                                <option value="{{ $driver->id }}">{{ $driver->name }}</option>
                             @endforeach
-                        </ul>
+                        </select>
                     </div>
-                @endif
-                <button class="btn btn-dark mt-3" data-toggle="modal" data-target="#reservationModal">Réserver cette voiture</button>
-            </form>
+                    @if(session('error'))
+                        <div class="mt-3 alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if ($errors->reservationErrors->any())
+                        <div class="mt-3 alert alert-danger">
+                            <ul>
+                                @foreach ($errors->reservationErrors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <button type="submit" class="btn btn-dark mt-3">Réserver cette voiture</button>
+                </form>
+            @endif
         </div>
     </div>
 </section>
@@ -81,4 +99,66 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const pickupDateInput = document.getElementById('pickupDate');
+    const returnDateInput = document.getElementById('returnDate');
+    const driverSelect = document.getElementById('driver_id');
+
+    function fetchAvailableDrivers() {
+        const startDate = pickupDateInput.value;
+        const endDate = returnDateInput.value;
+
+        if (startDate && endDate && driverSelect) {
+            // Disable driver select while loading
+            driverSelect.disabled = true;
+            driverSelect.innerHTML = '<option>Chargement des chauffeurs...</option>';
+
+            const url = `{{ route('api.available-drivers') }}?start_date=${startDate}&end_date=${endDate}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(drivers => {
+                    driverSelect.innerHTML = ''; // Clear existing options
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Aucun';
+                    driverSelect.appendChild(defaultOption);
+
+                    if (drivers.length > 0) {
+                        drivers.forEach(driver => {
+                            const option = document.createElement('option');
+                            option.value = driver.id;
+                            option.textContent = driver.name;
+                            driverSelect.appendChild(option);
+                        });
+                    } else {
+                        const noDriverOption = document.createElement('option');
+                        noDriverOption.disabled = true;
+                        noDriverOption.textContent = 'Aucun chauffeur disponible';
+                        driverSelect.appendChild(noDriverOption);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching available drivers:', error);
+                    driverSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+                })
+                .finally(() => {
+                    driverSelect.disabled = false; // Re-enable driver select
+                });
+        }
+    }
+
+    if (pickupDateInput && returnDateInput) {
+        pickupDateInput.addEventListener('change', fetchAvailableDrivers);
+        returnDateInput.addEventListener('change', fetchAvailableDrivers);
+    }
+});
+</script>
+
 @include('_footer')

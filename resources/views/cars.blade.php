@@ -1,84 +1,96 @@
 @include('_header')
 <section class="products">
     <div class="container">
-        <h1 class="page-title mb-4">Nos voitures</h1>
-        <div class="row g-4">
-            <!-- Filtre de gauche -->
-            <div class="col-lg-3">
-                <div class="filtre-container">
-                    <div class="filtre">
-                        <div class="mb-4">
-                            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filtres</h5>
-                            <div class="filter-section">
-                                <h6 class="mb-2">Type de véhicule :</h6>
+        @if(isset($search) && !empty($search))
+                <h1 class="page-title mb-4">Résultats pour : <span class="text-primary">"{{ $search }}"</span></h1>
+            @else
+                <h1 class="page-title mb-4">Nos voitures</h1>
+            @endif
+        <form action="{{ route('car.search') }}" method="GET">
+            <div class="row g-4">
+                <!-- Filtre de gauche -->
+                <div class="col-lg-3">
+                    <div class="filtre-container">
+                        <div class="filtre">
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filtres</h5>
+                                <div class="filter-section">
+                                    <h6 class="mb-2">Type de véhicule :</h6>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="compactCheckbox" value="compact" {{ in_array('compact', request('type', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="compactCheckbox">Compact</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="sedanCheckbox" value="sedan" {{ in_array('sedan', request('type', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="sedanCheckbox">Sedan</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="berlineCheckbox" value="berline" {{ in_array('berline', request('type', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="berlineCheckbox">Berline</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="pickupCheckbox" value="pickup" {{ in_array('pickup', request('type', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="pickupCheckbox">Pick-up</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="suvCheckbox" value="suv" {{ in_array('suv', request('type', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="suvCheckbox">SUV</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="filter-section mb-4">
+                                <h6 class="mb-2">Date de disponibilité :</h6>
+                                <div class="mb-2">
+                                    <label for="start_date" class="form-label small">Début</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}">
+                                </div>
+                                <div>
+                                    <label for="end_date" class="form-label small">Fin</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date') }}">
+                                </div>
+                            </div>
+
+                            <div class="filter-section mb-4">
+                                <h6 class="mb-2">Capacité :</h6>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="compactCheckbox" value="compact">
-                                    <label class="form-check-label" for="compactCheckbox">
-                                        Compact
-                                    </label>
+                                    <input class="form-check-input" type="checkbox" name="capacity[]" id="persons2Checkbox" value="2" {{ in_array('2', request('capacity', [])) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="persons2Checkbox">2 personnes</label>
                                 </div>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="sedanCheckbox" value="sedan">
-                                    <label class="form-check-label" for="sedanCheckbox">
-                                        Sedan
-                                    </label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="berlineCheckbox" value="berline">
-                                    <label class="form-check-label" for="berlineCheckbox">
-                                        Berline
-                                    </label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="pickupCheckbox" value="pickup">
-                                    <label class="form-check-label" for="pickupCheckbox">
-                                        Pick-up
-                                    </label>
+                                    <input class="form-check-input" type="checkbox" name="capacity[]" id="persons4Checkbox" value="4" {{ in_array('4', request('capacity', [])) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="persons4Checkbox">4 personnes</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="suvCheckbox" value="suv">
-                                    <label class="form-check-label" for="suvCheckbox">
-                                        SUV
-                                    </label>
+                                    <input class="form-check-input" type="checkbox" name="capacity[]" id="persons5Checkbox" value="5" {{ in_array('5', request('capacity', [])) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="persons5Checkbox">5 personnes</label>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="filter-section">
-                            <h6 class="mb-2">Capacité :</h6>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="persons2Checkbox" value="2">
-                                <label class="form-check-label" for="persons2Checkbox">
-                                    2 personnes
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="persons4Checkbox" value="4">
-                                <label class="form-check-label" for="persons4Checkbox">
-                                    4 personnes
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="persons5Checkbox" value="5">
-                                <label class="form-check-label" for="persons5Checkbox">
-                                    5 personnes
-                                </label>
-                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Appliquer les filtres</button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Contenu principal -->
-            <div class="col-lg-9">
-                <div class="search-container mb-3">
-                    <div class="input-group">
-                        <input type="text" id="search" class="form-control" placeholder="Rechercher une voiture...">
-                        <button class="btn btn-primary" type="button">
-                            <i class="fas fa-search me-1"></i> Rechercher
-                        </button>
+                <!-- Contenu principal -->
+                <div class="col-lg-9">
+                    @if ($errors->any())
+                        <div class="alert alert-danger mb-3">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <div class="search-container mb-3">
+                        <div class="input-group">
+                            <input type="text" id="search" name="location" class="form-control" placeholder="Rechercher une voiture..." value="{{ $search ?? '' }}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-1"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
                 <div class="all-products">
                     @forelse ($cars as $car)
@@ -110,8 +122,13 @@
                     @empty
                         <div class="no-results text-center py-5">
                             <i class="fas fa-car-crash fa-3x mb-3"></i>
-                            <h4>Aucun véhicule trouvé</h4>
-                            <p class="text-muted">Essayez de modifier vos critères de recherche</p>
+                            @if(isset($search) && !empty($search))
+                                <h4>Aucun véhicule trouvé pour "{{ $search }}"</h4>
+                                <p class="text-muted">Essayez d'utiliser d'autres mots-clés ou de vérifier nos filtres.</p>
+                            @else
+                                <h4>Aucun véhicule disponible pour le moment</h4>
+                                <p class="text-muted">Veuillez revenir plus tard.</p>
+                            @endif
                         </div>
                     @endforelse
                 </div>

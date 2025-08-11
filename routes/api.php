@@ -14,11 +14,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [AuthController::class, 'login']);
+// Using web routes for authentication instead of API routes
+// Login is handled by UserController@login in web.php
 
-// Contact Form Route
-Route::post('/contact', [App\Http\Controllers\ContactController::class, 'sendEmail'])->name('contact.submit');
+
+use App\Http\Controllers\LocationController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');

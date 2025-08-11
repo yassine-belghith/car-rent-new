@@ -4,9 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Location;
 use Illuminate\Http\Request;
+use App\Models\Destination;
 
 class LocationController extends Controller
 {
+        public function search(Request $request)
+    {
+        $query = $request->get('query');
+        $destinations = Destination::where('name', 'LIKE', "%{$query}%")
+                                   ->orWhere('city', 'LIKE', "%{$query}%")
+                                   ->orWhere('country', 'LIKE', "%{$query}%")
+                                   ->pluck('name');
+        return response()->json($destinations);
+    }
     public function index()
     {
         $locations = Location::all();

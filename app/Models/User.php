@@ -52,8 +52,35 @@ class User extends Authenticatable
     /**
      * Get the driver record associated with the user.
      */
-    public function driver()
+        public function driver()
     {
         return $this->hasOne(Driver::class);
+    }
+
+    /**
+     * Get the locations for the user.
+     */
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
+
+    /**
+     * Get the rentals assigned to the user as a driver.
+     */
+    public function assignedRentals()
+    {
+        return $this->hasMany(Rental::class, 'driver_id');
+    }
+
+    /**
+     * Scope a query to only include drivers.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDrivers($query)
+    {
+        return $query->where('is_driver', true);
     }
 }

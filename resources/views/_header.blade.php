@@ -384,12 +384,12 @@
               <!-- Onglets pour un utilisateur connecté -->
               @auth
                   <li class="nav-item">
-                      <a class="nav-link {{ request()->routeIs('users.rentals') ? 'active' : '' }}" href="{{ route('users.rentals' , ['id' => Auth::user()->id ]) }}">
+                      <a class="nav-link {{ request()->routeIs('users.rentals') ? 'active' : '' }}" href="{{ route('users.rentals' , ['user' => Auth::user()->id ]) }}">
                           <i class="fas fa-calendar-alt me-2"></i> Mes Locations
                       </a>
                   </li>
                   <li class="nav-item">
-                      <form method="POST" action="{{ route('user.logout') }}" class="d-inline">
+                      <form method="POST" action="{{ route('logout') }}" class="d-inline">
                           @csrf
                           <button type="submit" class="btn btn-outline-primary ms-2">
                               <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
@@ -410,12 +410,7 @@
               <!-- Onglets pour un utilisa  teur non connecté -->
               @guest
                   <li class="nav-item">
-                      <a class="nav-link active" href="{{ url('/') }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Retour à l'accueil">
-                          <i class="fas fa-home"></i> Accueil
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link fs-5 text-white fw-light mx-3" href="{{ route('page.login') }}">Connexion</a>
+                      <a class="nav-link fs-5 text-white fw-light mx-3" href="{{ route('login') }}">Connexion</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link fs-5 text-white fw-light mx-3" href="{{ route('page.register') }}">Inscription</a>

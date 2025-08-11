@@ -25,7 +25,7 @@ class TransferController extends Controller
      */
     public function index()
     {
-        $transfers = Transfer::with(['user', 'driver', 'car', 'pickupLocation', 'dropoffLocation'])
+        $transfers = Transfer::with(['user', 'driver', 'car'])
                                  ->latest()
                                  ->paginate(10);
 
@@ -83,7 +83,7 @@ class TransferController extends Controller
      */
     public function show(Transfer $transfer)
     {
-        //
+        return view('invoices.transfer', compact('transfer'));
     }
 
     /**

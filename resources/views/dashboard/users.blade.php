@@ -282,47 +282,53 @@
                                         {{ ucfirst($user->role) }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if($user->is_driver)
-                                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Oui</span>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i> Oui
+                                        </span>
                                     @else
                                         <span class="badge bg-light text-dark">Non</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        @if ($user->role == 'admin')
-                                            <form action="{{ route('user.removeAdmin', $user->id) }}" method="POST" class="d-inline">
+                                        @if ($user->role === 'admin')
+                                            <form action="{{ route('dashboard.users.removeAdmin', $user->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Retirer les droits d\'administrateur à cet utilisateur ?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Retirer les droits d\'administrateur à cet utilisateur ?')">
                                                     <i class="fas fa-user-minus"></i>
                                                 </button>
                                             </form>
                                         @else
-                                            <form action="{{ route('user.makeAdmin', $user->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('dashboard.users.makeAdmin', $user->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Donner les droits d\'administrateur à cet utilisateur ?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                                    onclick="return confirm('Donner les droits d\'administrateur à cet utilisateur ?')">
                                                     <i class="fas fa-user-shield"></i>
                                                 </button>
                                             </form>
                                         @endif
 
-                                        @if ($user->is_driver)
-                                            <form action="{{ route('user.removeDriver', $user->id) }}" method="POST" class="d-inline">
+                                        @if($user->is_driver)
+                                            <form action="{{ route('dashboard.users.removeDriver', $user->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Retirer le statut de chauffeur à cet utilisateur ?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-warning"
+                                                    onclick="return confirm('Retirer le statut de chauffeur à cet utilisateur ?')">
                                                     <i class="fas fa-user-times"></i>
                                                 </button>
                                             </form>
                                         @else
-                                            <form action="{{ route('user.makeDriver', $user->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('dashboard.users.makeDriver', $user->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn btn-sm btn-outline-info" onclick="return confirm('Définir cet utilisateur comme chauffeur ?')">
-                                                    <i class="fas fa-steering-wheel"></i>
+                                                <button type="submit" class="btn btn-sm btn-outline-info"
+                                                    onclick="return confirm('Définir cet utilisateur comme chauffeur ?')">
+                                                    <i class="fas fa-taxi"></i>
                                                 </button>
                                             </form>
                                         @endif

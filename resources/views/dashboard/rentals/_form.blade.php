@@ -45,6 +45,27 @@
 </div>
 
 <div class="row mt-3">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="driver_id">Chauffeur</label>
+            <select name="driver_id" id="driver_id" class="form-control @error('driver_id') is-invalid @enderror">
+                <option value="">Aucun chauffeur assigné</option>
+                @foreach($drivers as $driver)
+                    <option value="{{ $driver->id }}" {{ (old('driver_id', $rental->driver_id ?? '') == $driver->id) ? 'selected' : '' }}>
+                        {{ $driver->name }} ({{ $driver->email }})
+                    </option>
+                @endforeach
+            </select>
+            @error('driver_id')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
     <div class="col-md-4">
         <div class="form-group">
             <label for="rental_date">Date de début <span class="text-danger">*</span></label>
@@ -82,7 +103,7 @@
     </div>
     
     <div class="col-md-4">
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label for="status">Statut <span class="text-danger">*</span></label>
             <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
                 <option value="pending" {{ old('status', $rental->status ?? '') == 'pending' ? 'selected' : '' }}>En attente</option>
@@ -91,6 +112,23 @@
                 <option value="cancelled" {{ old('status', $rental->status ?? '') == 'cancelled' ? 'selected' : '' }}>Annulée</option>
             </select>
             @error('status')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="driver_id">Chauffeur</label>
+            <select name="driver_id" id="driver_id" class="form-control @error('driver_id') is-invalid @enderror">
+                <option value="">-- Sélectionner un chauffeur --</option>
+                @foreach($drivers as $driver)
+                    <option value="{{ $driver->id }}" {{ old('driver_id', $rental->driver_id ?? '') == $driver->id ? 'selected' : '' }}>
+                        {{ $driver->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('driver_id')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>

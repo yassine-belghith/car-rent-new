@@ -4,22 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Car;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class CarController extends Controller
 {
-    public function Cars()
-    {
-        $cars = Car::all(); // Récupère tous les voitures
-
-        return view('cars', ['cars' => $cars]); // Envoie les cars à la vue
-    }
 
     public function detail($id) 
     {
         $car = Car::find($id);
         $rentals = $car->rentals()->where('status', '!=', 3)->get();
+        $drivers = User::where('role', 'driver')->get();
     
-        return view('detailCars', compact('car', 'rentals'));
+        return view('detailCars', compact('car', 'rentals', 'drivers'));
     }
     
 
@@ -55,7 +52,7 @@ class CarController extends Controller
             'description' => $validated['description'] ?? null,
         ]);
 
-        return redirect()->route('dashboard.cars')->with('success', 'Voiture ajoutée avec succès!');
+        return redirect()->route('dashboard.cars.index')->with('success', 'Voiture ajoutée avec succès!');
     }
 
     public function edit($id)
@@ -87,5 +84,96 @@ class CarController extends Controller
         $cars = Car::take(4)->get();
     
         return view('welcome', ['cars' => $cars]);
+    }
+
+    public function cars()
+    {
+        $cars = Car::all();
+        return view('cars', ['cars' => $cars]);
+    }
+
+    public function search(\Illuminate\Http\Request $request)
+    {
+        $validated = $request->validate([
+            'location' => 'nullable|string|max:255',
+            'type' => 'nullable|array',
+            'type.*' => 'string|in:compact,sedan,berline,pickup,suv',
+            'capacity' => 'nullable|array',
+            'capacity.*' => 'integer|in:2,4,5',
+            'start_date' => 'nullable|date|required_with:end_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date|required_with:start_date',
+        ]);
+
+        $query = Car::query();
+
+        // Search by location (brand or model)
+        if ($request->filled('location')) {
+            $location = $request->input('location');
+            $query->where(function ($q) use ($location) {
+                $q->where('brand', 'like', "%{$location}%")
+                  ->orWhere('model', 'like', "%{$location}%");
+            });
+        }
+
+        // Filter by vehicle type
+        if ($request->filled('type')) {
+            $query->whereIn('type', $request->input('type'));
+        }
+
+        // Filter by capacity
+        if ($request->filled('capacity')) {
+            $query->whereIn('seats', $request->input('capacity'));
+        }
+
+        // Filter by date availability
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+
+            $query->whereDoesntHave('rentals', function ($q) use ($startDate, $endDate) {
+                $q->where(function ($query) use ($startDate, $endDate) {
+                    $query->where('rental_date', '<=', $endDate)
+                          ->where('return_date', '>=', $startDate);
+                });
+            });
+        }
+
+        $cars = $query->get();
+
+        return view('cars', [
+            'cars' => $cars,
+            'search' => $request->input('location'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+        ]);
+    }
+
+    public function getAvailableDrivers(Request $request)
+    {
+        $validated = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $validated['start_date'];
+        $endDate = $validated['end_date'];
+
+        Log::info('Fetching available drivers for dates:', ['start' => $startDate, 'end' => $endDate]);
+
+        $query = User::where('is_driver', true)
+            ->whereDoesntHave('assignedRentals', function ($query) use ($startDate, $endDate) {
+                $query->where(function ($q) use ($startDate, $endDate) {
+                    $q->where('rental_date', '<', $endDate)
+                      ->where('return_date', '>', $startDate);
+                });
+            });
+        
+        Log::info('Driver Availability Query:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+
+        $availableDrivers = $query->get();
+
+        Log::info('Found ' . $availableDrivers->count() . ' available drivers.');
+
+        return response()->json($availableDrivers);
     }
 }

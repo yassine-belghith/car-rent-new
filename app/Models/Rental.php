@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rental extends Model
 {
-    protected $fillable = [
+        protected $fillable = [
         'user_id',
         'car_id',
+        'driver_id',
         'rental_date',
         'return_date',
         'total_price',
@@ -26,6 +27,8 @@ class Rental extends Model
     protected $casts = [
         'rental_date' => 'datetime',
         'return_date' => 'datetime',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'total_price' => 'decimal:2'
     ];
 
@@ -34,9 +37,14 @@ class Rental extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function car()
+        public function car()
     {
         return $this->belongsTo(Car::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id');
     }
 }
 

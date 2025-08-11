@@ -256,7 +256,7 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('cars.create') }}" class="btn btn-primary mt-3 mt-md-0">
+        <a href="{{ route('dashboard.cars.page.create') }}" class="btn btn-primary mt-3 mt-md-0">
             <i class="fas fa-plus me-2"></i>Ajouter un véhicule
         </a>
     </div>
@@ -379,13 +379,13 @@
                                             <a href="{{ route('cars.detail', $car->id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Voir détails">
                                                 <i class="far fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('cars.edit', $car->id) }}" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Modifier">
+                                            <a href="{{ route('dashboard.cars.edit', $car->id) }}" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Modifier">
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             <a href="{{ route('dashboard.cars.maintenances.index', $car) }}" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Carnet d'entretien">
                                                 <i class="fas fa-book"></i>
                                             </a>
-                                            <form action="{{ route('cars.delete', $car->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?');">
+                                            <form action="{{ route('dashboard.cars.delete', $car->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer">
@@ -401,7 +401,7 @@
                                         <div class="d-flex flex-column align-items-center">
                                             <i class="fas fa-car-side text-muted mb-2" style="font-size: 2rem;"></i>
                                             <p class="text-muted mb-0">Aucun véhicule enregistré</p>
-                                            <a href="{{ route('page.createCar') }}" class="btn btn-sm btn-primary mt-2">
+                                            <a href="{{ route('dashboard.cars.page.create') }}" class="btn btn-sm btn-primary mt-2">
                                                 <i class="fas fa-plus me-1"></i> Ajouter un véhicule
                                             </a>
                                         </div>

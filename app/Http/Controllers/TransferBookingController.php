@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Car;
 use App\Models\Destination;
 use App\Models\Transfer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Mail\TransferRequestReceived;
 use App\Mail\AdminTransferRequestNotification;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class TransferBookingController extends Controller
 {
@@ -22,36 +26,35 @@ class TransferBookingController extends Controller
     {
         $this->authorize('create', Transfer::class);
         $validatedData = $request->validate([
-            'pickup_location_id' => 'required|exists:destinations,id',
-            'dropoff_location_id' => 'required|exists:destinations,id|different:pickup_location_id',
-            'pickup_datetime' => 'required|date|after:now',
+            'pickup_datetime' => 'required|date',
+            'pickup_latitude' => 'required|numeric',
+            'pickup_longitude' => 'required|numeric',
+            'dropoff_latitude' => 'required|numeric',
+            'dropoff_longitude' => 'required|numeric',
             'passenger_count' => 'required|integer|min:1',
-            'luggage_count' => 'required|integer|min:0',
-            'airline' => 'nullable|string|max:255',
-            'flight_number' => 'nullable|string|max:255',
-            'special_instructions' => 'nullable|string',
+            'car_id' => 'required|exists:cars,id',
         ]);
-    
-        $validatedData['user_id'] = Auth::id();
-        $validatedData['reference_number'] = 'TRN-' . strtoupper(uniqid());
-        $validatedData['status'] = 'pending';
-        $validatedData['price'] = 0; // Admin will set the price
-    
-        $transfer = Transfer::create($validatedData);
-    
-        // Send confirmation email to the user
-        Mail::to($transfer->user)->send(new TransferRequestReceived($transfer));
 
-        // Send notification email to admin
-        // Send notification email to admin
-        $adminEmail = env('ADMIN_EMAIL');
-        if ($adminEmail) {
-            Mail::to($adminEmail)->send(new AdminTransferRequestNotification($transfer));
+        $validatedData['user_id'] = auth()->id();
+        $validatedData['reference_number'] = 'TRN-' . strtoupper(Str::random(8));
+        $validatedData['status'] = 'pending';
+        $validatedData['price'] = 0; // Admin will set the price later
+
+        $transfer = Transfer::create($validatedData);
+
+        // Send emails
+        try {
+            Mail::to($request->user())->send(new TransferRequestReceived($transfer));
+            $adminEmail = env('ADMIN_EMAIL');
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new AdminTransferRequestNotification($transfer));
+            }
+        } catch (\Exception $e) {
+            // Log the error and continue without crashing
+            Log::error('Mail sending failed: ' . $e->getMessage());
         }
-    
-        return redirect()->route('transfers.my')
-                         ->with('success', 'Votre demande de transfert a été soumise avec succès. Nous vous contacterons bientôt pour la confirmation et le prix.');
-    }
+
+        return redirect()->route('transfers.my')->with('success', 'Votre demande de transfert a été envoyée avec succès.');   }
     /**
      * Display a listing of the user's transfer bookings.
      *
@@ -61,7 +64,7 @@ class TransferBookingController extends Controller
     {
         $this->authorize('viewAny', Transfer::class);
         $transfers = Transfer::where('user_id', Auth::id())
-                             ->with(['pickupLocation', 'dropoffLocation', 'driver', 'car'])
+                             ->with(['driver', 'car'])
                              ->latest()
                              ->paginate(10);
 
@@ -77,6 +80,24 @@ class TransferBookingController extends Controller
     {
         $this->authorize('create', Transfer::class);
         $destinations = Destination::where('is_active', true)->orderBy('name')->get();
-        return view('transfers.book', compact('destinations'));
+        $cars = Car::where('availability', true)->orderBy('brand')->orderBy('model')->get();
+        return view('transfers.book', compact('destinations', 'cars'));
+    }
+
+    /**
+     * Download the invoice for a specific transfer.
+     *
+     * @param  \App\Models\Transfer  $transfer
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadInvoice(Transfer $transfer)
+    {
+        $this->authorize('view', $transfer);
+
+        $data = ['transfer' => $transfer->load('user', 'car')];
+
+        $pdf = PDF::loadView('invoices.transfer', $data);
+
+        return $pdf->download('facture-' . $transfer->reference_number . '.pdf');
     }
 }

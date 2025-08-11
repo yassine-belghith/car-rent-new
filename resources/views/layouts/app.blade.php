@@ -15,181 +15,152 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .min-vh-80 {
-            min-height: 80vh;
+            background-color: #f7f7f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
-        /* Custom Navbar Styling */
-        .navbar-nav .nav-link {
-            position: relative;
-            transition: color 0.3s ease-in-out;
-            color: #333;
-            font-weight: 500;
-            padding-bottom: 8px;
+        .top-bar {
+            background-color: #111;
+            height: 8px;
         }
 
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            transform: scaleX(0);
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #007bff;
-            transform-origin: bottom right;
-            transition: transform 0.25s ease-out;
+        .koyeb-navbar {
+            background-color: #f7f7f7;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5e5;
         }
 
-        .navbar-nav .nav-link:hover {
-            color: #007bff;
+        .koyeb-navbar .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #111 !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .koyeb-navbar .navbar-brand i {
+            font-size: 1.8rem;
+            color: #111;
+            margin-right: 0.5rem;
         }
 
-        .navbar-nav .nav-link:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
+        .nav-center {
+            background-color: #e9e9e9;
+            border-radius: 12px;
+            padding: 0.5rem;
         }
 
-        .navbar-nav .nav-link.active {
-            color: #007bff !important;
-        }
-
-        .navbar-nav .nav-link.active::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-        }
-
-        /* Dropdown Animation */
-        .dropdown .dropdown-menu {
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            display: block;
-            pointer-events: none;
-        }
-
-        .dropdown:hover .dropdown-menu, .dropdown.show .dropdown-menu {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .dropdown-item {
+        .nav-center .nav-link {
+            color: #555;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
             transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        .dropdown-item:hover {
-            background-color: #f0f0f0;
+        .nav-center .nav-link:hover {
+            background-color: #dcdcdc;
+            color: #111;
         }
 
-        .user-avatar-initials {
-            background-color: #007bff !important;
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-right .login-link {
+            color: #333;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-right .login-link:hover {
+            color: #000;
+        }
+
+        .nav-right .signup-btn {
+            background-color: #222;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-right .signup-btn:hover {
+            background-color: #000;
+            color: #fff;
         }
     </style>
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
     @stack('styles')
+    <style>
+        /* Fix for hero section overlay blocking form interaction */
+        .hero-section::before {
+            pointer-events: none !important;
+        }
+        .booking-panel {
+            pointer-events: auto !important;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    <i class="fas fa-car"></i> CarRental
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <div class="top-bar"></div>
+        <nav class="koyeb-navbar">
+            <!-- Left: Brand -->
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <i class="fas fa-layer-group"></i> <!-- Placeholder for Koyeb-style logo -->
+                <span>Car Rent</span>
+            </a>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link {{ Route::is('car.acceuil') ? 'active' : '' }}" href="{{ route('car.acceuil') }}">Accueil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ Route::is('car.cars') ? 'active' : '' }}" href="{{ route('car.cars') }}">Nos véhicules</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ Route::is('contact.form') ? 'active' : '' }}" href="{{ route('contact.form') }}">Contact</a>
-                        </li>
-                    </ul>
+            <!-- Center: Main Navigation -->
+            <div class="nav-center d-none d-lg-flex">
+                <ul class="navbar-nav flex-row">
+                    <li class="nav-item"><a href="{{ route('car.acceuil') }}" class="nav-link">Accueil</a></li>
+                    <li class="nav-item"><a href="{{ route('car.cars') }}" class="nav-link">Voitures</a></li>
+                    <li class="nav-item"><a href="{{ route('contact.form') }}" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
 
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    @php
-                                        $user = Auth::user();
-                                        $avatarUrl = $user->avatar ? asset('storage/' . ltrim($user->avatar, '/')) : '';
-                                        $hasAvatar = !empty($user->avatar);
-                                    @endphp
-                                    @if($hasAvatar)
-                                        <div class="me-2 user-avatar" 
-                                             style="width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center; 
-                                                    background-image: url('{{ $avatarUrl }}?v={{ time() }}'); 
-                                                    border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-                                             data-avatar-url="{{ $avatarUrl }}"></div>
-                                    @else
-                                        <div class="me-2 d-flex align-items-center justify-content-center user-avatar-initials" style="width: 48px; height: 48px; border-radius: 50%; 
-                                                    color: white; font-size: 20px; font-weight: bold; border: 2px solid #fff; 
-                                                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                        </div>
-                                    @endif
-                                    <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
-                                </a>
-                                
-                                <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 py-2" aria-labelledby="navbarDropdown" style="min-width: 240px;">
-                                    <div class="px-4 py-3 border-bottom">
-                                        <h6 class="mb-0">{{ Auth::user()->name }}</h6>
-                                        <small class="text-muted">{{ Auth::user()->email }}</small>
-                                    </div>
-                                    <div class="dropdown-divider my-2"></div>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard.index') }}">
-                                        <i class="fas fa-tachometer-alt me-2 text-primary"></i> Tableau de bord
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.show') }}">
-                                        <i class="fas fa-user-circle me-2 text-primary"></i> Mon Profil
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('preferences.show') }}">
-                                        <i class="fas fa-cog me-2 text-primary"></i> Paramètres
-                                    </a>
-                                    <div class="dropdown-divider my-2"></div>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('transfers.book') }}">
-                                        <i class="fas fa-car-side me-2 text-primary"></i> Réserver un Transfert
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('transfers.my') }}">
-                                        <i class="fas fa-history me-2 text-primary"></i> Mes Transferts
-                                    </a>
-                                    <div class="dropdown-divider my-2"></div>
-                                    <a class="dropdown-item d-flex align-items-center text-danger" href="{{ route('user.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
-                                    </a>
-                                    <form id="logout-form" action="{{ route('user.logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
+            <!-- Right: Auth Links -->
+            <div class="nav-right">
+                @guest
+                    @if (Route::has('login'))
+                        <a class="login-link" href="{{ route('login') }}">Login</a>
+                    @endif
+                    @if (Route::has('register'))
+                        <a class="signup-btn" href="{{ route('register') }}">Sign Up</a>
+                    @endif
+                @else
+                    <div class="dropdown">
+                        <a id="navbarDropdown" class="login-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            {{ Auth::user()->name }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ route('profile.show') }}">Mon Profil</a>
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+                @endguest
             </div>
         </nav>
 
@@ -213,7 +184,20 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     @stack('scripts')
+
 </body>
 </html>
