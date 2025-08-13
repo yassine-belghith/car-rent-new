@@ -56,7 +56,7 @@
                 <input type="text" class="form-control" id="exampleInputName" name="name">
             </div>
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Email</label>
+              <label for="exampleInputEmail1" class="form-label">Adresse E-mail</label>
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
             </div>
             <div class="mb-3">
@@ -81,11 +81,11 @@
                 </div>
             @endif
             <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Cochez moi</label>
+                <input type="checkbox" class="form-check-input" id="exampleCheck1" name="terms" required>
+                <label class="form-check-label" for="exampleCheck1">J'accepte les termes et conditions</label>
             </div>
-            <button type="submit" class="btn btn-success">S'inscrire</button>
-            <p class="mt-3">Vous avez déjà un compte <i><a href="{{ route('page.login') }}" class="text-black">connectez-vous</a></i></p>
+            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+            <p class="mt-3 text-center">Vous avez déjà un compte ? <a href="{{ route('login') }}">Connectez-vous</a></p>
                 </form>
                 </div>
             </div>

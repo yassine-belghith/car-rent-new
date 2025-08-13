@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Car;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class CarController extends Controller
 {
@@ -20,7 +21,12 @@ class CarController extends Controller
     }
     
 
-    public function create(Request $request)
+    public function create()
+    {
+        return view('dashboard.createCars');
+    }
+
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'brand' => 'required|string|max:255',
@@ -55,6 +61,28 @@ class CarController extends Controller
         return redirect()->route('dashboard.cars.index')->with('success', 'Voiture ajoutée avec succès!');
     }
 
+    public function getReservations($id)
+    {
+        $car = Car::find($id);
+        $rentals = $car->rentals()->where('status', '!=', 3)->get();
+
+        $events = [];
+        foreach ($rentals as $rental) {
+            // FullCalendar's end date is exclusive, so add a day to make the range inclusive
+            $endDate = \Carbon\Carbon::parse($rental->end_date)->addDay();
+
+            $events[] = [
+                'title' => 'Réservé',
+                'start' => $rental->start_date,
+                'end' => $endDate->toDateString(),
+                'color' => 'red',
+                'allDay' => true
+            ];
+        }
+
+        return response()->json($events);
+    }
+
     public function edit($id)
     {
         $car = Car::find($id);
@@ -68,7 +96,7 @@ class CarController extends Controller
 
         $car->update($request->all());
 
-        return redirect()->route('dashboard.cars')->with('success', 'Voiture mise à jour avec succès!');
+        return redirect()->route('dashboard.cars.index')->with('success', 'Voiture mise à jour avec succès!');
     }
 
     public function destroy($id)
@@ -76,7 +104,7 @@ class CarController extends Controller
         $car = Car::find($id);
         $car->delete();
 
-        return redirect()->route('dashboard.cars')->with('success', 'Voiture supprimée avec succès!');
+        return redirect()->route('dashboard.cars.index')->with('success', 'Voiture supprimée avec succès!');
     }
 
     public function acceuil() 
@@ -88,7 +116,7 @@ class CarController extends Controller
 
     public function cars()
     {
-        $cars = Car::all();
+        $cars = Car::paginate(9);
         return view('cars', ['cars' => $cars]);
     }
 
@@ -138,7 +166,7 @@ class CarController extends Controller
             });
         }
 
-        $cars = $query->get();
+        $cars = $query->paginate(9);
 
         return view('cars', [
             'cars' => $cars,
@@ -175,5 +203,11 @@ class CarController extends Controller
         Log::info('Found ' . $availableDrivers->count() . ' available drivers.');
 
         return response()->json($availableDrivers);
+    }
+
+    public function index()
+    {
+        $cars = Car::with(['rentals'])->latest()->paginate(10);
+        return view('dashboard.cars.index', compact('cars'));
     }
 }

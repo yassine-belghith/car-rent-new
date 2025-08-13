@@ -78,7 +78,6 @@ class TransferBookingController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', Transfer::class);
         $destinations = Destination::where('is_active', true)->orderBy('name')->get();
         $cars = Car::where('availability', true)->orderBy('brand')->orderBy('model')->get();
         return view('transfers.book', compact('destinations', 'cars'));
@@ -96,6 +95,7 @@ class TransferBookingController extends Controller
 
         $data = ['transfer' => $transfer->load('user', 'car')];
 
+        $data['transfer']->load('user');
         $pdf = PDF::loadView('invoices.transfer', $data);
 
         return $pdf->download('facture-' . $transfer->reference_number . '.pdf');

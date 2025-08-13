@@ -36,6 +36,7 @@ class TransferController extends Controller
      */
     public function show(Transfer $transfer)
     {
+        $transfer->load('user');
         return view('invoices.transfer', compact('transfer'));
     }
 

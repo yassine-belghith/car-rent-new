@@ -3,62 +3,51 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
-use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
+    |
+    */
+
+    use AuthenticatesUsers;
+
     /**
-     * Display the login view.
+     * The user has been authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
      */
-    public function create(): View
+    protected function authenticated(Request $request, $user)
     {
-        return view('login');
+        return redirect()->intended($this->redirectPath())->with('success', 'Connexion réussie !');
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Where to redirect users after login.
+     *
+     * @var string
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
-
-        $request->session()->regenerate();
-
-        $user = $request->user();
-
-        if ($user->is_admin) {
-            return redirect()->intended(route('admin.dashboard'));
-        } elseif ($user->is_driver) {
-            return redirect()->intended(route('driver.dashboard'));
-        } else {
-            return redirect()->intended(route('car.acceuil'));
-        }
-    }
+    protected $redirectTo = '/home';
 
     /**
-     * Destroy an authenticated session.
+     * Create a new controller instance.
+     *
+     * @return void
      */
-    public function destroy(Request $request): RedirectResponse
+    public function __construct()
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        $this->middleware('guest')->except('logout');
+        $this->middleware('auth')->only('logout');
     }
 }

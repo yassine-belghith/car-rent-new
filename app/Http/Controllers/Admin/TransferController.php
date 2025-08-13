@@ -72,7 +72,8 @@ class TransferController extends Controller
         $validatedData['status'] = $request->filled('driver_id') ? 'assigned' : 'confirmed';
         $validatedData['payment_status'] = 'pending'; // Default payment status
 
-        Transfer::create($validatedData);
+        $transfer = Transfer::create($validatedData);
+        $transfer->load('user');
 
         return redirect()->route('dashboard.transfers.index')
                          ->with('success', 'Transfert créé avec succès.');
@@ -83,6 +84,7 @@ class TransferController extends Controller
      */
     public function show(Transfer $transfer)
     {
+        $transfer->load('user');
         return view('invoices.transfer', compact('transfer'));
     }
 

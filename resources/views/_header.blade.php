@@ -230,30 +230,17 @@
     }
     
     /* Add scroll effect */
-    document.addEventListener('DOMContentLoaded', function() {
-        const navbar = document.querySelector('.navbar');
-        let lastScroll = 0;
-        
-        window.addEventListener('scroll', function() {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll <= 0) {
-                navbar.classList.remove('scrolled');
-                return;
-            }
-            
-            navbar.classList.add('scrolled');
-            
-            if (currentScroll > lastScroll && currentScroll > 100) {
-                // Scrolling down
-                navbar.style.transform = 'translateY(-100%)';
-            } else {
-                // Scrolling up
-                navbar.style.transform = 'translateY(0)';
-            }
-            
-            lastScroll = currentScroll;
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        const navbar = document.querySelector('.koyeb-navbar');
+        if (navbar) {
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
     });
 
     // Initialize tooltips
@@ -274,7 +261,7 @@
         });
 
         // Navbar scroll effect
-        const navbar = document.querySelector('.navbar');
+        const navbar = document.querySelector('.koyeb-navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
                 navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
@@ -350,7 +337,7 @@
     .navbar-nav .nav-item:nth-child(6) { animation-delay: 0.6s; }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-custom">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-custom koyeb-navbar">
   <div class="container">
       <a class="navbar-brand" href="{{ route('car.acceuil') }}">
           <img src="{{ asset('assets/rentlogo.png') }}" alt="Logo" class="d-inline-block align-top" style="height:60px; width:auto;">

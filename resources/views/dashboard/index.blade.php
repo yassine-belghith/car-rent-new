@@ -14,7 +14,7 @@ $breadcrumbs = [
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"></h1>
         <div class="d-none d-sm-inline-block">
-            <span class="text-muted">Dernière mise à jour: {{ now()->format('d/m/Y H:i') }}</span>
+
         </div>
     </div>
     <!-- Stats Cards -->

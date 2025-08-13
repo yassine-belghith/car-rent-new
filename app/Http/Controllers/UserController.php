@@ -64,7 +64,7 @@ class UserController extends Controller
 
     public function users()
     {
-        $users = User::all(); // Récupère tous les utilisateurs
+        $users = User::paginate(15); // Récupère tous les utilisateurs
 
         return view('dashboard.users', ['users' => $users]); // Envoie les utilisateurs à la vue
     }

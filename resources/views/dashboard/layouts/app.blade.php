@@ -179,9 +179,9 @@
                 <a href="{{ route('dashboard.users.index') }}" class="list-group-item {{ request()->routeIs('dashboard.users*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i> Utilisateurs
                 </a>
-                <a href="{{ route('dashboard.cars.index') }}" class="list-group-item {{ request()->routeIs('dashboard.cars*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.cars.create') }}" class="list-group-item {{ request()->routeIs('dashboard.cars*') ? 'active' : '' }}">
                     <i class="fas fa-car"></i> Véhicules
-                </a>
+                </a>    
                 <a href="{{ route('dashboard.rentals.index') }}" class="list-group-item {{ request()->routeIs('dashboard.rentals*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i> Locations
                 </a>

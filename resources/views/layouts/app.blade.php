@@ -129,20 +129,27 @@
             <!-- Center: Main Navigation -->
             <div class="nav-center d-none d-lg-flex">
                 <ul class="navbar-nav flex-row">
-                    <li class="nav-item"><a href="{{ route('car.acceuil') }}" class="nav-link">Accueil</a></li>
-                    <li class="nav-item"><a href="{{ route('car.cars') }}" class="nav-link">Voitures</a></li>
-                    <li class="nav-item"><a href="{{ route('contact.form') }}" class="nav-link">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('car.acceuil') ? 'active' : '' }}" href="{{ route('car.acceuil') }}">Accueil</a></li>
+                    <li class="nav-item">
+    @php
+        $carsRoute = (Auth::check() && Auth::user()->role === 'admin') ? 'dashboard.cars.index' : 'car.cars';
+        $isActivePattern = (Auth::check() && Auth::user()->role === 'admin') ? 'dashboard/cars*' : 'cars';
+    @endphp
+    <a class="nav-link {{ request()->is($isActivePattern) ? 'active' : '' }}" href="{{ route($carsRoute) }}">Voitures</a>
+</li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('contact') ? 'active' : '' }}" href="{{ route('contact.form') }}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('transfers.book') ? 'active' : '' }}" href="{{ route('transfers.book') }}">Transferts</a></li>
                 </ul>
             </div>
 
             <!-- Right: Auth Links -->
             <div class="nav-right">
                 @guest
-                    @if (Route::has('login'))
-                        <a class="login-link" href="{{ route('login') }}">Login</a>
+                    @if (!Route::is('login'))
+                        <a class="login-link" href="{{ route('login') }}">Connexion</a>
                     @endif
-                    @if (Route::has('register'))
-                        <a class="signup-btn" href="{{ route('register') }}">Sign Up</a>
+                    @if (!Route::is('register'))
+                        <a class="signup-btn" href="{{ route('register') }}">Inscription</a>
                     @endif
                 @else
                     <div class="dropdown">
@@ -150,11 +157,16 @@
                             {{ Auth::user()->name }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('profile.show') }}">Mon Profil</a>
-                            <a class="dropdown-item" href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                Logout
-                            </a>
+                            @if(Auth::user()->role === 'admin')
+                                <li><a class="dropdown-item" href="{{ route('dashboard.index') }}">Dashboard</a></li>
+                            @endif
+                            <li><a class="dropdown-item" href="{{ route('profile.show') }}">Mon Profil</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Déconnexion
+                                </a>
+                            </li>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
                             </form>
@@ -166,6 +178,14 @@
 
         <!-- Main Content -->
         <main class="py-4">
+            @if(session('success'))
+                <div class="container">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            @endif
             @yield('content')
         </main>
 
@@ -197,6 +217,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 
 </body>

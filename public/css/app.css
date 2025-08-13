@@ -246,3 +246,236 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+.header, .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: white; /* to prevent content from showing through */
+}
+
+.navbar.navbar-custom {
+    transform: translateY(0) !important;
+}
+
+
+/* Glassmorphism Navbar Effect */
+.navbar.fixed-top {
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+
+/* Enhanced Navbar Scroll Effect */
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+
+/* --- Final Navbar Adjustments --- */
+
+/* Make navbar transparent at the top */
+.navbar:not(.scrolled) {
+    background: transparent !important;
+}
+
+/* Change link colors to white for better visibility */
+.navbar:not(.scrolled) .navbar-nav .nav-link,
+.navbar:not(.scrolled) .navbar-brand,
+.navbar:not(.scrolled) .login-link-class { /* Assuming a class for the login link */
+    color: #fff !important;
+}
+
+/* Style for the login button if it is one */
+.navbar:not(.scrolled) .btn-login {
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+/* Ensure brand and links are dark on scrolled navbar */
+.navbar.scrolled .navbar-brand,
+.navbar.scrolled .navbar-nav .nav-link {
+    color: #333 !important;
+}
+
+
+/* --- End of Navbar Adjustments --- */
+
+
+
+/* --- Koyeb-Inspired Navbar Redesign --- */
+
+/* Main Navbar Container */
+.koyeb-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease;
+}
+
+/* Scrolled State */
+.koyeb-navbar.scrolled {
+    background-color: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Left: Brand */
+.koyeb-navbar .navbar-brand {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.koyeb-navbar .navbar-brand i {
+    margin-right: 0.5rem;
+    font-size: 1.8rem;
+}
+
+/* Center: Navigation Links */
+.koyeb-navbar .nav-center .nav-link {
+    color: #ccc;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.koyeb-navbar .nav-center .nav-link:hover,
+.koyeb-navbar .nav-center .nav-link.active {
+    color: #fff;
+}
+
+.koyeb-navbar .nav-center .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background-color: #fff;
+    transition: width 0.3s ease;
+}
+
+.koyeb-navbar .nav-center .nav-link:hover::after,
+.koyeb-navbar .nav-center .nav-link.active::after {
+    width: 50%;
+}
+
+/* Right: Auth Link */
+.koyeb-navbar .login-link {
+    color: #fff;
+    background-color: transparent;
+    border: 1px solid #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.koyeb-navbar .login-link:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+/* --- End of Navbar Redesign --- */
+
+
+
+/* --- Koyeb-Inspired Navbar Redesign --- */
+
+/* Main Navbar Container */
+.koyeb-navbar {
+    padding: 1rem 2rem;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease;
+    background: transparent !important;
+}
+
+/* Scrolled State */
+.koyeb-navbar.scrolled {
+    background-color: rgba(10, 10, 10, 0.7) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Brand & Links Color */
+.koyeb-navbar:not(.scrolled) .navbar-brand,
+.koyeb-navbar:not(.scrolled) .nav-link {
+    color: #fff !important;
+}
+
+.koyeb-navbar.scrolled .navbar-brand,
+.koyeb-navbar.scrolled .nav-link {
+    color: #eee !important;
+}
+
+.koyeb-navbar.scrolled .nav-link:hover {
+    color: #fff !important;
+}
+
+/* Link Hover Effect */
+.koyeb-navbar .nav-link {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.koyeb-navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background-color: #fff;
+    transition: width 0.3s ease;
+}
+
+.koyeb-navbar .nav-link:hover::after,
+.koyeb-navbar .nav-link.active::after {
+    width: 50%;
+}
+
+/* Auth Buttons */
+.koyeb-navbar:not(.scrolled) .btn-outline-primary {
+    color: #fff !important;
+    border-color: #fff !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.koyeb-navbar:not(.scrolled) .btn-outline-primary:hover {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.koyeb-navbar.scrolled .btn-outline-primary {
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+/* --- End of Navbar Redesign --- */
+

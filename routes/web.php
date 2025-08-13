@@ -1,175 +1,102 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\PageController;
-use App\Http\Controllers\CarController;
-use App\Http\Controllers\RentalController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
-
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\RentalController;
+use App\Http\Controllers\TransferController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CarController as DashboardCarController;
+use App\Http\Controllers\RentalController as DashboardRentalController;
+use App\Http\Controllers\UserController as DashboardUserController;
 use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\DriverController;
-use App\Http\Controllers\Admin\TransferController;
-use App\Http\Controllers\Driver\DashboardController as DriverDashboardController;
+use App\Http\Controllers\TransferController as DashboardTransferController;
 use App\Http\Controllers\TransferBookingController;
-use App\Http\Controllers\LocationController;
-
+use App\Http\Controllers\Dashboard\ContactMessageController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
-// Regular authenticated routes
-Route::middleware(['auth'])->group(function () {
-    // User rental history
-    Route::get('/users/rentals/{user}', [App\Http\Controllers\UserController::class, 'rentals'])
-        ->name('users.rentals');
+// Home route redirect
+Route::get('/home', function () {
+    return redirect()->route('car.acceuil');
+})->name('home');
 
-        
-    // Authentication routes
+// Publicly Accessible Routes
+Route::get('/', [CarController::class, 'acceuil'])->name('car.acceuil');
+Route::get('/cars', [CarController::class, 'cars'])->name('car.cars');
+Route::get('/cars/search', [CarController::class, 'cars'])->name('car.search');
+Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.detail');
+Route::get('/contact', [ContactController::class, 'showContactForm'])->name('contact.form');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+Route::get('/transfers', [TransferBookingController::class, 'create'])->name('transfers.book');
+Route::post('/transfers', [\App\Http\Controllers\TransferBookingController::class, 'store'])->name('transfers.store');
+Route::post('/rentals/store/{car}', [RentalController::class, 'userStore'])->name('rental.user.store');
 
-
-    // User profile routes
-    
-    Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/profile', [UserController::class, 'profile'])->name('profile.show');
-    
-    // User preferences
-    Route::get('/preferences', [UserController::class, 'showPreferences'])->name('preferences.show');
-    Route::put('/preferences', [UserController::class, 'updatePreferences'])->name('preferences.update');
-    Route::post('/preferences/avatar', [UserController::class, 'updateAvatar'])->name('preferences.avatar');
-    Route::delete('/preferences/avatar/remove', [UserController::class, 'removeAvatar'])->name('preferences.avatar.remove');
+// User Profile & Preferences
+Route::middleware('auth')->group(function () {
+    Route::get('profile', [DashboardUserController::class, 'showProfile'])->name('profile.show');
+    Route::get('preferences', [DashboardUserController::class, 'showPreferences'])->name('preferences.show');
 });
-    
-    // Transfer bookings
-    Route::get('/transfers/my-transfers', [TransferBookingController::class, 'index'])->name('transfers.my');
-    Route::get('/transfers/book', [TransferBookingController::class, 'create'])->name('transfers.book');
-    Route::post('/transfers', [TransferBookingController::class, 'store'])->name('transfers.store');
-    Route::get('/transfers/{transfer}/invoice', [TransferBookingController::class, 'downloadInvoice'])->name('transfers.invoice');
-    
-    // Car rentals
-    Route::post('/rentals/store/{carId}', [RentalController::class, 'userStore'])->name('rental.user.store');
-    Route::get('/rentals/{rental}', [RentalController::class, 'show'])->name('rentals.show');
 
+// Authentication Routes
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login'])->name('login.perform');
+Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-// Admin only routes
-Route::middleware([
-    \App\Http\Middleware\AuthMiddleware::class,
-    \App\Http\Middleware\AdminMiddleware::class
-])->prefix('dashboard')->name('dashboard.')->group(function () {
-    // Dashboard routes
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [RegisterController::class, 'register']);
+
+// Admin Dashboard Routes
+Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
+    
     Route::get('/', [DashboardController::class, 'index'])->name('index');
-    
-    // Cars list
-    Route::get('/cars', [DashboardController::class, 'cars'])->name('cars.index');
-    
-    // Rentals list
-    Route::get('/rentals', [DashboardController::class, 'rentals'])->name('rentals.index');
-    
-    // Make/Remove Admin
-    Route::put('/users/{id}/make-admin', [UserController::class, 'makeAdmin'])->name('users.makeAdmin');
-    Route::put('/users/{id}/remove-admin', [UserController::class, 'removeAdmin'])->name('users.removeAdmin');
-    
-    // Car management
-    Route::get('/cars/create', [PageController::class, 'createCar'])->name('cars.page.create');
-    Route::post('/cars/create', [CarController::class, 'create'])->name('cars.create');
-    Route::get('/cars/edit/{id}', [CarController::class, 'edit'])->name('cars.edit');
-    Route::put('/cars/update/{id}', [CarController::class, 'update'])->name('cars.update');
-    Route::delete('/cars/delete/{id}', [CarController::class, 'destroy'])->name('cars.delete');
-    
-    // Car maintenance
-    Route::prefix('cars/{car}')->name('cars.')->group(function () {
-        Route::resource('maintenances', App\Http\Controllers\Admin\MaintenanceController::class)->names('maintenances');
-    });
-    
-    // Driver management
-    Route::put('/users/{id}/make-driver', [UserController::class, 'makeDriver'])->name('users.makeDriver');
-    Route::put('/users/{id}/remove-driver', [UserController::class, 'removeDriver'])->name('users.removeDriver');
+
+    // Car Management
+    Route::get('cars', [\App\Http\Controllers\CarController::class, 'index'])->name('dashboard.cars');
+    Route::resource('cars', DashboardCarController::class);
+    Route::get('cars/create', [DashboardCarController::class, 'create'])->name('cars.create');
+
+    // User Management
+    Route::get('users', [DashboardUserController::class, 'users'])->name('users.index');
+    Route::get('users/create', [DashboardUserController::class, 'create'])->name('users.create');
+    Route::post('users', [DashboardUserController::class, 'store'])->name('users.store');
+    Route::get('users/{user}/edit', [DashboardUserController::class, 'edit'])->name('users.edit');
+    Route::put('users/{user}', [DashboardUserController::class, 'update'])->name('users.update');
+    Route::delete('users/{user}', [DashboardUserController::class, 'destroy'])->name('users.destroy');
+    Route::put('users/{user}/make-admin', [DashboardUserController::class, 'makeAdmin'])->name('users.makeAdmin');
+    Route::put('users/{user}/remove-admin', [DashboardUserController::class, 'removeAdmin'])->name('users.removeAdmin');
+    Route::put('users/{user}/make-driver', [DashboardUserController::class, 'makeDriver'])->name('users.makeDriver');
+    Route::put('users/{user}/remove-driver', [DashboardUserController::class, 'removeDriver'])->name('users.removeDriver');
+
+    // Rental Management
+    Route::resource('rentals', DashboardRentalController::class);
+    Route::put('rentals/{rental}/status/{status}', [DashboardRentalController::class, 'updateStatus'])->name('rentals.status');
+
+    // Other Resources
+    Route::resource('destinations', DestinationController::class);
+    Route::resource('drivers', DriverController::class);
+    Route::resource('transfers', DashboardTransferController::class);
+
+    // Transfers
+    Route::get('transfers', [\App\Http\Controllers\Admin\TransferController::class, 'index'])->name('transfers.index');
+    Route::get('transfers/{transfer}/edit', [\App\Http\Controllers\Admin\TransferController::class, 'edit'])->name('transfers.edit');
 
     // Contact Messages
-    Route::prefix('contact-messages')->name('contact.messages.')->group(function() {
-        Route::get('/', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'index'])->name('index');
-        Route::get('/{contactMessage}', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'show'])->name('show');
-        Route::get('/{contactMessage}/edit', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'edit'])->name('edit');
-        Route::post('/{contactMessage}/toggle-read', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'toggleReadStatus'])->name('toggle-read');
-        Route::delete('/{contactMessage}', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'destroy'])->name('destroy');
-        Route::delete('/', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'destroyMultiple'])->name('destroy-multiple');
-        Route::get('/export', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'export'])->name('export');
-        Route::get('/stats', [\App\Http\Controllers\Dashboard\ContactMessageController::class, 'stats'])->name('stats');
-    });
-
-    // Users list
-    Route::get('/users', [DashboardController::class, 'users'])->name('users.index');
-
-    // Rentals Management
-    Route::prefix('rentals')->name('rentals.')->group(function() {
-        Route::get('/', [RentalController::class, 'index'])->name('index');
-        Route::get('/create', [RentalController::class, 'create'])->name('create');
-        Route::post('/', [RentalController::class, 'store'])->name('store');
-        Route::get('/{rental}', [RentalController::class, 'show'])->name('show');
-        Route::get('/{rental}/edit', [RentalController::class, 'edit'])->name('edit');
-        Route::put('/{rental}', [RentalController::class, 'update'])->name('update');
-        Route::put('/{rental}/status/{status}', [RentalController::class, 'updateStatus'])->name('status');
-        Route::delete('/{rental}', [RentalController::class, 'destroy'])->name('destroy');
-        
-        // Old routes for backward compatibility
-        Route::put('/status/{status}/{id}', [RentalController::class, 'updateStatus'])->name('status.old');
-        Route::delete('/delete/{id}', [RentalController::class, 'destroy'])->name('delete.old');
-    });
-    
-
-
-    // Destinations Management
-    Route::prefix('destinations')->name('destinations.')->group(function () {
-        Route::resource('/', DestinationController::class)->parameters(['' => 'destination']);
-    });
-
-    // Drivers Management
-    Route::prefix('drivers')->name('drivers.')->group(function () {
-        Route::resource('/', DriverController::class)->parameters(['' => 'driver']);
-    });
-
-    // Transfers Management
-    Route::prefix('transfers')->name('transfers.')->group(function () {
-        Route::resource('/', TransferController::class)->parameters(['' => 'transfer']);
+    Route::prefix('contact-messages')->name('contact.messages.')->group(function () {
+        Route::get('/', [ContactMessageController::class, 'index'])->name('index');
+        Route::get('/{contactMessage}', [ContactMessageController::class, 'show'])->name('show');
+        Route::get('/{contactMessage}/edit', [ContactMessageController::class, 'edit'])->name('edit');
+        Route::post('/{contactMessage}/toggle-read', [ContactMessageController::class, 'toggleReadStatus'])->name('toggle-read');
+        Route::delete('/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('destroy');
+        Route::delete('/multiple', [ContactMessageController::class, 'destroyMultiple'])->name('destroy-multiple');
+        Route::get('/export', [ContactMessageController::class, 'export'])->name('export');
+        Route::get('/stats', [ContactMessageController::class, 'stats'])->name('stats');
     });
 });
-
-// Driver routes (separate from admin routes)
-Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(function () {
-        Route::get('/dashboard', [App\Http\Controllers\Driver\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/transfers/{transfer}', [DriverDashboardController::class, 'show'])->name('transfers.show');
-    Route::post('/transfers/{transfer}/confirm', [DriverDashboardController::class, 'confirm'])->name('transfers.confirm');
-    Route::post('/transfers/{transfer}/decline', [DriverDashboardController::class, 'decline'])->name('transfers.decline');
-});
-
-// Public routes (no authentication required)
-Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
-Route::get('/', [CarController::class, 'acceuil'])->name('car.acceuil');
-
-// Routes pour le formulaire de contact
-Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'showContactForm'])->name('contact.form');
-Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'sendEmail'])->name('contact.submit');
-Route::get('/unsubscribe/contact', [\App\Http\Controllers\ContactController::class, 'unsubscribe'])->name('unsubscribe.contact');
-Route::get('/cars', [CarController::class, 'cars'])->name('car.cars');
-Route::get('/cars/search', [CarController::class, 'search'])->name('car.search');
-Route::get('/register', [PageController::class, 'register'])->name('page.register');
-Route::post('/register', [UserController::class ,'register'])->name('user.register');
-
-// Temp fix for old login route
-Route::get('/login-old', function () { return redirect()->route('login'); })->name('page.login');
-
-// Authentication routes
-Route::get('login', [LoginController::class, 'create'])->name('login')->middleware('guest');
-Route::post('login', [LoginController::class, 'store'])->name('login.perform')->middleware('guest');
-Route::post('logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
-Route::get('/cars/detail/{id}', [CarController::class, 'detail'])->name('cars.detail');
-Route::get('/api/available-drivers', [\App\Http\Controllers\CarController::class, 'getAvailableDrivers'])->name('api.available-drivers');

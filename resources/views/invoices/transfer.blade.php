@@ -86,11 +86,11 @@
             <table>
                 <tr>
                     <th>Nom</th>
-                    <td>{{ $transfer->user->name }}</td>
+                    <td>{{ $transfer->user?->name ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Email</th>
-                    <td>{{ $transfer->user->email }}</td>
+                    <td>{{ $transfer->user?->email ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -100,19 +100,31 @@
             <table>
                 <tr>
                     <th>Date et Heure de Prise en Charge</th>
-                    <td>{{ $transfer->pickup_datetime->format('d/m/Y \à H:i') }}</td>
+                    <td>{{ $transfer->pickup_datetime?->format('d/m/Y \à H:i') ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Lieu de Prise en Charge</th>
-                    <td>Lat: {{ number_format($transfer->pickup_latitude, 5) }}, Lng: {{ number_format($transfer->pickup_longitude, 5) }}</td>
+                    <td>
+                        @if(isset($transfer->pickup_latitude, $transfer->pickup_longitude))
+                            Lat: {{ number_format($transfer->pickup_latitude, 5) }}, Lng: {{ number_format($transfer->pickup_longitude, 5) }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th>Lieu de Dépose</th>
-                    <td>Lat: {{ number_format($transfer->dropoff_latitude, 5) }}, Lng: {{ number_format($transfer->dropoff_longitude, 5) }}</td>
+                    <td>
+                        @if(isset($transfer->dropoff_latitude, $transfer->dropoff_longitude))
+                            Lat: {{ number_format($transfer->dropoff_latitude, 5) }}, Lng: {{ number_format($transfer->dropoff_longitude, 5) }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th>Véhicule</th>
-                    <td>{{ $transfer->car->name ?? 'Non assigné' }} ({{ $transfer->car->type ?? '' }})</td>
+                    <td>{{ $transfer->car?->name ?? 'Non assigné' }} ({{ $transfer->car?->type ?? '' }})</td>
                 </tr>
                 <tr>
                     <th>Passagers</th>
