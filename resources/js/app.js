@@ -1,4 +1,5 @@
 import './bootstrap';
+import './chatbot.js';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 import jQuery from 'jquery';

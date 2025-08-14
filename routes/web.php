@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\DashboardController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\Admin\DriverController;
 use App\Http\Controllers\TransferController as DashboardTransferController;
 use App\Http\Controllers\TransferBookingController;
 use App\Http\Controllers\Dashboard\ContactMessageController;
+use App\Http\Controllers\UserPreferencesController;
+use App\Http\Controllers\ChatbotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,18 +34,34 @@ Route::get('/home', function () {
 // Publicly Accessible Routes
 Route::get('/', [CarController::class, 'acceuil'])->name('car.acceuil');
 Route::get('/cars', [CarController::class, 'cars'])->name('car.cars');
-Route::get('/cars/search', [CarController::class, 'cars'])->name('car.search');
-Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.detail');
+Route::get('/cars/search', [CarController::class, 'search'])->name('car.search');
+Route::get('/cars/{car}', [CarController::class, 'publicShow'])->name('cars.detail');
 Route::get('/contact', [ContactController::class, 'showContactForm'])->name('contact.form');
-Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+Route::post('/contact', [ContactController::class, 'sendEmail'])->name('contact.send');
+
+// Language and Currency Switcher
+Route::get('language/{locale}', [LocalizationController::class, 'switch'])->name('language.switch');
+Route::get('currency/{currency}', [LocalizationController::class, 'switchCurrency'])->name('currency.switch');
+Route::get('/unsubscribe/contact', [ContactController::class, 'unsubscribe'])->name('unsubscribe.contact');
 Route::get('/transfers', [TransferBookingController::class, 'create'])->name('transfers.book');
 Route::post('/transfers', [\App\Http\Controllers\TransferBookingController::class, 'store'])->name('transfers.store');
-Route::post('/rentals/store/{car}', [RentalController::class, 'userStore'])->name('rental.user.store');
+Route::post('/rentals/user/{car}', [RentalController::class, 'userStore'])->name('rental.user.store')->middleware('auth');
+
+// Current reservation routes
+Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
+
+// Chatbot route
+Route::post('/chatbot', [ChatbotController::class, 'handle'])->name('chatbot.handle');
 
 // User Profile & Preferences
 Route::middleware('auth')->group(function () {
-    Route::get('profile', [DashboardUserController::class, 'showProfile'])->name('profile.show');
-    Route::get('preferences', [DashboardUserController::class, 'showPreferences'])->name('preferences.show');
+        Route::get('profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile.show');
+    Route::put('profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update');
+    Route::prefix('preferences')->name('preferences.')->group(function () {
+        Route::get('/', [App\Http\Controllers\UserController::class, 'showPreferences'])->name('show');
+        Route::post('avatar', [UserPreferencesController::class, 'updateAvatar'])->name('avatar');
+        Route::put('/', [UserPreferencesController::class, 'update'])->name('update');
+    });
 });
 
 // Authentication Routes
@@ -59,9 +78,7 @@ Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->g
     Route::get('/', [DashboardController::class, 'index'])->name('index');
 
     // Car Management
-    Route::get('cars', [\App\Http\Controllers\CarController::class, 'index'])->name('dashboard.cars');
     Route::resource('cars', DashboardCarController::class);
-    Route::get('cars/create', [DashboardCarController::class, 'create'])->name('cars.create');
 
     // User Management
     Route::get('users', [DashboardUserController::class, 'users'])->name('users.index');
@@ -87,6 +104,9 @@ Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->g
     // Transfers
     Route::get('transfers', [\App\Http\Controllers\Admin\TransferController::class, 'index'])->name('transfers.index');
     Route::get('transfers/{transfer}/edit', [\App\Http\Controllers\Admin\TransferController::class, 'edit'])->name('transfers.edit');
+
+    // Contact Messages
+    Route::resource('contact-messages', ContactMessageController::class);
 
     // Contact Messages
     Route::prefix('contact-messages')->name('contact.messages.')->group(function () {

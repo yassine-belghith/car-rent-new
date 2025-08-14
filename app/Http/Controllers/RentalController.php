@@ -101,37 +101,33 @@ class RentalController extends Controller
         return redirect()->route('dashboard.rentals.index')->with('success', 'Location mise à jour avec succès!');
     }
 
-    public function userStore(Request $request, $carId)
+    public function userStore(Request $request, Car $car)
     {
         $validated = $request->validate([
-            'rental_date' => 'required|date|after_or_equal:today',
-            'return_date' => 'required|date|after:rental_date',
-            'driver_id' => 'nullable|exists:users,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after:start_date',
         ]);
 
-        $car = Car::findOrFail($carId);
-
-        if (!$this->checkCarAvailability($car->id, $validated['rental_date'], $validated['return_date'])) {
+        if (!$this->checkCarAvailability($car->id, $validated['start_date'], $validated['end_date'])) {
             return back()->with('error', 'Désolé, cette voiture n\'est pas disponible pour les dates que vous avez sélectionnées. Veuillez choisir une autre période.')
                          ->withInput();
         }
 
-        $rentalDate = Carbon::parse($validated['rental_date']);
-        $returnDate = Carbon::parse($validated['return_date']);
+        $rentalDate = Carbon::parse($validated['start_date']);
+        $returnDate = Carbon::parse($validated['end_date']);
         $days = $returnDate->diffInDays($rentalDate);
-        $totalPrice = $days * $car->price_per_day; // Assuming you have a price_per_day attribute on your Car model.
+        $totalPrice = $days * $car->price_per_day;
 
         $rental = Rental::create([
             'user_id' => Auth::id(),
             'car_id' => $car->id,
-            'driver_id' => $validated['driver_id'] ?? null,
-            'rental_date' => $validated['rental_date'],
-            'return_date' => $validated['return_date'],
+            'rental_date' => $validated['start_date'],
+            'return_date' => $validated['end_date'],
             'total_price' => $totalPrice,
-            'status' => 'pending', // Default status for user rentals
+            'status' => 'pending',
         ]);
 
-        return redirect()->route('cars.detail', ['id' => $car->id])
+        return redirect()->route('cars.detail', ['car' => $car])
                          ->with('success', 'Votre demande de réservation a été envoyée avec succès! Nous vous contacterons bientôt pour la confirmation.');
     }
 

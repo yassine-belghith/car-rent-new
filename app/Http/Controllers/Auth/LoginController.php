@@ -30,7 +30,15 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        return redirect()->intended($this->redirectPath())->with('success', 'Connexion réussie !');
+        if ($user->hasRole('admin')) {
+            return redirect()->route('dashboard.index');
+        }
+
+        if ($user->driver == 1) {
+            return redirect()->route('drivers.index');
+        }
+
+        return redirect()->route('car.acceuil');
     }
 
     /**

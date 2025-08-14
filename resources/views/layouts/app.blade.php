@@ -7,12 +7,16 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body {
             background-color: #f7f7f7;
@@ -25,12 +29,17 @@
         }
 
         .koyeb-navbar {
-            background-color: #f7f7f7;
-            padding: 1rem 2rem;
+            background-color: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1rem 2rem; /* Adjusted padding for sticky nav */
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            transition: padding 0.3s ease; /* Smooth transition */
         }
 
         .koyeb-navbar .navbar-brand {
@@ -123,33 +132,58 @@
             <!-- Left: Brand -->
             <a class="navbar-brand" href="{{ url('/') }}">
                 <i class="fas fa-layer-group"></i> <!-- Placeholder for Koyeb-style logo -->
-                <span>Car Rent</span>
+                <span>{{ __('messages.app_name') }}</span>
             </a>
 
             <!-- Center: Main Navigation -->
             <div class="nav-center d-none d-lg-flex">
                 <ul class="navbar-nav flex-row">
-                    <li class="nav-item"><a class="nav-link {{ request()->is('car.acceuil') ? 'active' : '' }}" href="{{ route('car.acceuil') }}">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">{{ __('messages.home') }}</a></li>
                     <li class="nav-item">
     @php
         $carsRoute = (Auth::check() && Auth::user()->role === 'admin') ? 'dashboard.cars.index' : 'car.cars';
         $isActivePattern = (Auth::check() && Auth::user()->role === 'admin') ? 'dashboard/cars*' : 'cars';
     @endphp
-    <a class="nav-link {{ request()->is($isActivePattern) ? 'active' : '' }}" href="{{ route($carsRoute) }}">Voitures</a>
+    <a class="nav-link {{ request()->is($isActivePattern) ? 'active' : '' }}" href="{{ route($carsRoute) }}">{{ __('messages.cars') }}</a>
 </li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('contact') ? 'active' : '' }}" href="{{ route('contact.form') }}">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('transfers.book') ? 'active' : '' }}" href="{{ route('transfers.book') }}">Transferts</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('contact') ? 'active' : '' }}" href="{{ route('contact.form') }}">{{ __('messages.contact') }}</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('transfers.book') ? 'active' : '' }}" href="{{ route('transfers.book') }}">{{ __('messages.transfers') }}</a></li>
                 </ul>
             </div>
 
             <!-- Right: Auth Links -->
             <div class="nav-right">
+                <!-- Language Dropdown -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-globe"></i> {{ strtoupper(session('locale', app()->getLocale())) }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'fr') }}">FR</a></li>
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">EN</a></li>
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'ja') }}">JA</a></li>
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'es') }}">ES</a></li>
+                    </ul>
+                </div>
+
+                <!-- Currency Dropdown -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="currencyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-money-bill-wave"></i> {{ session('currency', 'TND') }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="currencyDropdown">
+                        <li><a class="dropdown-item" href="{{ route('currency.switch', 'TND') }}">TND</a></li>
+                        <li><a class="dropdown-item" href="{{ route('currency.switch', 'EUR') }}">EUR</a></li>
+                                                <li><a class="dropdown-item" href="{{ route('currency.switch', 'USD') }}">USD</a></li>
+                    </ul>
+                </div>
+
                 @guest
                     @if (!Route::is('login'))
-                        <a class="login-link" href="{{ route('login') }}">Connexion</a>
+                        <a class="login-link" href="{{ route('login') }}">{{ __('messages.login') }}</a>
                     @endif
                     @if (!Route::is('register'))
-                        <a class="signup-btn" href="{{ route('register') }}">Inscription</a>
+                        <a class="signup-btn" href="{{ route('register') }}">{{ __('messages.register') }}</a>
                     @endif
                 @else
                     <div class="dropdown">
@@ -158,13 +192,13 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             @if(Auth::user()->role === 'admin')
-                                <li><a class="dropdown-item" href="{{ route('dashboard.index') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('dashboard.index') }}">{{ __('messages.dashboard') }}</a></li>
                             @endif
-                            <li><a class="dropdown-item" href="{{ route('profile.show') }}">Mon Profil</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.show') }}">{{ __('messages.my_profile') }}</a></li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    Déconnexion
+                                    {{ __('messages.logout') }}
                                 </a>
                             </li>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -208,7 +242,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -218,7 +252,12 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    @stack('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 
+    <x-chatbot />
+
+    @vite(['resources/js/app.js'])
+    @stack('scripts')
 </body>
 </html>

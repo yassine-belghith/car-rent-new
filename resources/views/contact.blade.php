@@ -102,17 +102,31 @@
             @csrf
             <div class="mb-3 text-start">
                 <label for="name" class="form-label">Nom Complet <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                @auth
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ auth()->user()->name }}" readonly required>
+                                @else
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                @endauth
             </div>
 
             <div class="mb-3 text-start">
                 <label for="email" class="form-label">Adresse E-mail <span class="text-danger">*</span></label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                @auth
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ auth()->user()->email }}" readonly required>
+                                @else
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                @endauth
             </div>
 
             <div class="mb-3 text-start">
                 <label for="subject" class="form-label">Sujet <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="subject" name="subject" required>
+                <select class="form-select" id="subject" name="subject" required>
+                    <option value="" disabled selected>Choisissez un sujet</option>
+                    <option value="bug">Bug</option>
+                    <option value="entretien">Entretien</option>
+                    <option value="probleme">Problème</option>
+                    <option value="assistance">Assistance</option>
+                </select>
             </div>
             
             
@@ -130,18 +144,78 @@
             </div>
         </form>
 
-        <div class="contact-info">
-            <h3 class="contact-info-title">Nos Coordonnées</h3>
-            <p class="contact-info-text">Vous pouvez également nous joindre directement via les canaux suivants :</p>
-            <div>
-                <a href="tel:+21612345678">
-                    <i class="fas fa-phone-alt me-2"></i>+216 12 345 678
-                </a>
-                <a href="mailto:contact@retnacar.tn">
-                    <i class="fas fa-envelope me-2"></i>contact@retnacar.tn
-                </a>
-            </div>
+        
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('contactForm');
+        const successAlert = document.getElementById('form-success');
+        const errorAlert = document.getElementById('form-errors');
+        const errorList = errorAlert.querySelector('ul');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const spinner = submitButton.querySelector('.spinner-border');
+        const submitText = submitButton.querySelector('.submit-text');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Reset states
+            submitButton.disabled = true;
+            spinner.classList.remove('d-none');
+            submitText.textContent = 'Envoi en cours...';
+            successAlert.classList.add('d-none');
+            errorAlert.classList.add('d-none');
+            errorList.innerHTML = '';
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successAlert.classList.remove('d-none');
+                    form.reset();
+                } else if (data.errors) {
+                    Object.values(data.errors).forEach(errors => {
+                        errors.forEach(error => {
+                            const li = document.createElement('li');
+                            li.textContent = error;
+                            errorList.appendChild(li);
+                        });
+                    });
+                    errorAlert.classList.remove('d-none');
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = data.message || 'Une erreur inattendue est survenue.';
+                    errorList.appendChild(li);
+                    errorAlert.classList.remove('d-none');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const li = document.createElement('li');
+                li.textContent = 'Une erreur de connexion est survenue. Veuillez réessayer.';
+                errorList.appendChild(li);
+                errorAlert.classList.remove('d-none');
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                spinner.classList.add('d-none');
+                submitText.textContent = 'Envoyer le Message';
+            });
+        });
+    });
+</script>
+@endpush

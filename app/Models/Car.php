@@ -13,8 +13,13 @@ class Car extends Model
         'images',
         'availability',
         'registration_number',
-        'description'
-    ] ;
+        'description',
+        'price_per_day'
+    ];
+
+    protected $casts = [
+        'images' => 'array',
+    ];
     
     public function rentals()
     {

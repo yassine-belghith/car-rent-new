@@ -93,19 +93,19 @@
 @section('content')
 <div class="transfer-container">
     <div class="transfer-card">
-        <h1>Réserver un Transfert</h1>
-        <p class="subtitle">Sélectionnez vos lieux de prise en charge et de dépose sur la carte.</p>
+        <h1>{{ __('messages.transfers_title') }}</h1>
+        <p class="subtitle">{{ __('messages.transfers_subtitle') }}</p>
 
         <div id="map"></div>
 
         <div class="location-controls">
-            <button type="button" id="set-pickup" class="btn btn-outline-primary">Définir le Lieu de Prise en Charge</button>
-            <button type="button" id="set-dropoff" class="btn btn-outline-secondary">Définir le Lieu de Dépose</button>
+            <button type="button" id="set-pickup" class="btn btn-outline-primary">{{ __('messages.transfers_set_pickup') }}</button>
+            <button type="button" id="set-dropoff" class="btn btn-outline-secondary">{{ __('messages.transfers_set_dropoff') }}</button>
         </div>
 
         <div class="location-display">
-            <span id="pickup-coords">Prise en charge : Non défini</span>
-            <span id="dropoff-coords">Dépose : Non défini</span>
+            <span id="pickup-coords">{{ __('messages.transfers_pickup_location_status') }}</span>
+            <span id="dropoff-coords">{{ __('messages.transfers_dropoff_location_status') }}</span>
         </div>
 
         <form action="{{ route('transfers.store') }}" method="POST">
@@ -117,9 +117,9 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label for="car_id" class="form-label">Véhicule</label>
+                    <label for="car_id" class="form-label">{{ __('messages.transfers_vehicle') }}</label>
                     <select name="car_id" id="car_id" class="form-select @error('car_id') is-invalid @enderror" required>
-                        <option value="" disabled selected>Sélectionnez un véhicule</option>
+                        <option selected disabled>{{ __('messages.transfers_select_vehicle') }}</option>
                         @foreach($cars as $car)
                             <option value="{{ $car->id }}" {{ old('car_id') == $car->id ? 'selected' : '' }}>
                                 {{ $car->brand }} {{ $car->model }}
@@ -129,7 +129,7 @@
                     @error('car_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="pickup_datetime" class="form-label">Date et Heure de Prise en Charge</label>
+                    <label for="pickup_datetime" class="form-label">{{ __('messages.transfers_pickup_datetime') }}</label>
                     <input type="datetime-local" name="pickup_datetime" id="pickup_datetime" class="form-control @error('pickup_datetime') is-invalid @enderror" value="{{ old('pickup_datetime') }}" required>
                     @error('pickup_datetime')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
@@ -137,19 +137,19 @@
 
             <div class="row">
                 <div class="col-md-6 mb-4">
-                    <label for="passenger_count" class="form-label">Passagers</label>
+                    <label for="passenger_count" class="form-label">{{ __('messages.transfers_passengers') }}</label>
                     <input type="number" name="passenger_count" id="passenger_count" class="form-control @error('passenger_count') is-invalid @enderror" value="{{ old('passenger_count', 1) }}" required min="1">
                     @error('passenger_count')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-6 mb-4">
-                    <label for="luggage_count" class="form-label">Bagages</label>
+                    <label for="luggage_count" class="form-label">{{ __('messages.transfers_luggage') }}</label>
                     <input type="number" name="luggage_count" id="luggage_count" class="form-control @error('luggage_count') is-invalid @enderror" value="{{ old('luggage_count', 0) }}" required min="0">
                     @error('luggage_count')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>
 
             <div class="d-grid">
-                <button type="submit" class="btn btn-submit">Demander le Transfert</button>
+                <button type="submit" class="btn btn-submit">{{ __('messages.transfers_request_transfer') }}</button>
             </div>
         </form>
     </div>
@@ -157,6 +157,14 @@
 @endsection
 
 @push('scripts')
+<script>
+    window.translations = {
+        pickupPopup: "{{ __('messages.transfers_pickup_location_popup') }}",
+        dropoffPopup: "{{ __('messages.transfers_dropoff_location_popup') }}",
+        pickupLabel: "{{ __('messages.transfers_pickup_location_label') }}",
+        dropoffLabel: "{{ __('messages.transfers_dropoff_location_label') }}"
+    };
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const map = L.map('map').setView([36.8065, 10.1815], 13); // Centered on Tunis
@@ -196,18 +204,18 @@
                 } else {
                     pickupMarker = L.marker(e.latlng, {draggable: true}).addTo(map);
                 }
-                pickupMarker.bindPopup('<b>Lieu de Prise en Charge</b>').openPopup();
+                pickupMarker.bindPopup(`<b>${window.translations.pickupPopup}</b>`).openPopup();
 
                 pickupLatInput.value = lat;
                 pickupLngInput.value = lng;
-                pickupCoordsP.textContent = `Prise en charge : ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                pickupCoordsP.textContent = `${window.translations.pickupLabel} ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
                 pickupMarker.on('dragend', function(event) {
                     const marker = event.target;
                     const position = marker.getLatLng();
                     pickupLatInput.value = position.lat;
                     pickupLngInput.value = position.lng;
-                    pickupCoordsP.textContent = `Prise en charge : ${position.lat.toFixed(5)}, ${position.lng.toFixed(5)}`;
+                    pickupCoordsP.textContent = `${window.translations.pickupLabel} ${position.lat.toFixed(5)}, ${position.lng.toFixed(5)}`;
                 });
 
             } else if (currentSelection === 'dropoff') {
@@ -216,18 +224,18 @@
                 } else {
                     dropoffMarker = L.marker(e.latlng, {draggable: true}).addTo(map);
                 }
-                dropoffMarker.bindPopup('<b>Lieu de Dépose</b>').openPopup();
+                dropoffMarker.bindPopup(`<b>${window.translations.dropoffPopup}</b>`).openPopup();
 
                 dropoffLatInput.value = lat;
                 dropoffLngInput.value = lng;
-                dropoffCoordsP.textContent = `Dépose : ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                dropoffCoordsP.textContent = `${window.translations.dropoffLabel} ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
                 dropoffMarker.on('dragend', function(event) {
                     const marker = event.target;
                     const position = marker.getLatLng();
                     dropoffLatInput.value = position.lat;
                     dropoffLngInput.value = position.lng;
-                    dropoffCoordsP.textContent = `Dépose : ${position.lat.toFixed(5)}, ${position.lng.toFixed(5)}`;
+                    dropoffCoordsP.textContent = `${window.translations.dropoffLabel} ${position.lat.toFixed(5)}, ${position.lng.toFixed(5)}`;
                 });
             }
             

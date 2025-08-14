@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Tableau de bord</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('dashboard.cars') }}">Véhicules</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('dashboard.cars.index') }}">Véhicules</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Modifier</li>
             </ol>
         </nav>
@@ -18,7 +18,7 @@
             <h5 class="mb-0 fw-bold">Détails du véhicule</h5>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('cars.update' , ['id' => $car->id ]) }}">
+            <form method="POST" action="{{ route('dashboard.cars.update', $car) }}">
                 @csrf
                 @method('PUT')
                 
@@ -57,7 +57,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="availability" class="form-label fw-medium text-gray-700">Disponibilité <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-lg border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none" 
+                            <select class=  "form-select form-select-lg border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none" 
                                     id="availability" name="availability" required>
                                 <option value="1" {{ $car->availability == 1 ? 'selected' : '' }}>Disponible</option>
                                 <option value="0" {{ $car->availability == 0 ? 'selected' : '' }}>Non disponible</option>
@@ -70,27 +70,27 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="images" class="form-label fw-medium text-gray-700">Images</label>
-                            <input type="text" class="form-control form-control-lg border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none" 
-                                   id="images" name="images" value="{{ $car->images }}">
+                            <input type="text" class="form-control form-control-lg border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none"
+                                   id="images" name="images" value="{{ is_array($car->images) ? implode(', ', $car->images) : $car->images }}">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="color" class="form-label fw-medium text-gray-700">Couleur</label>
-                            <input type="text" class="form-control form-control-lg border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none" 
-                                   id="color" name="color" value="{{ $car->color }}">
+                            <input type="text" class="form-control form-control-lg border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none"
+                                   id="color" name="color" value="{{ is_array($car->color) ? implode(', ', $car->color) : $car->color }}">
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group mb-4">
                     <label for="description" class="form-label fw-medium text-gray-700">Description</label>
-                    <textarea class="form-control border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none" 
-                              id="description" name="description" rows="4">{{ $car->description }}</textarea>
+                    <textarea class="form-control border-2 border-gray-200 rounded-3 py-2 px-3 focus:border-primary focus:shadow-none"
+                              id="description" name="description" rows="4">{{ is_array($car->description) ? implode(', ', $car->description) : $car->description }}</textarea>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
-                    <a href="{{ route('dashboard.cars') }}" class="btn btn-light border-2 border-gray-300 text-gray-700 fw-medium px-4 py-2 rounded-3">
+                    <a href="{{ route('dashboard.cars.index') }}" class="btn btn-light border-2 border-gray-300 text-gray-700 fw-medium px-4 py-2 rounded-3">
                         <i class="fas fa-arrow-left me-2"></i> Annuler
                     </a>
                     <button type="submit" class="btn btn-primary bg-primary border-0 px-4 py-2 rounded-3 fw-medium">

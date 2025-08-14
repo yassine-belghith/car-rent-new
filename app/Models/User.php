@@ -83,4 +83,9 @@ class User extends Authenticatable
     {
         return $query->where('is_driver', true);
     }
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
 }

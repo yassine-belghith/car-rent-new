@@ -126,6 +126,13 @@
             background-color: var(--white);
             box-shadow: var(--shadow-soft);
             border-radius: 0.5rem;
+            position: sticky;
+            top: 1.5rem; /* Aligns with page-content-wrapper padding */
+            z-index: 1020;
+        }
+
+        main.container-fluid {
+            padding-top: 1rem; /* Add space below the sticky navbar */
         }
 
         /* Page Content & Components */
@@ -173,29 +180,26 @@
                 <img src="{{ asset('assets/rentlogo.png') }}" alt="Logo" style="max-width: 120px; height: auto;">
             </div>
             <div class="list-group list-group-flush mt-3">
-                <a href="{{ route('dashboard.index') }}" class="list-group-item {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.index') }}" class="list-group-item {{ request()->is('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i> Tableau de bord
                 </a>
-                <a href="{{ route('dashboard.users.index') }}" class="list-group-item {{ request()->routeIs('dashboard.users*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.users.index') }}" class="list-group-item {{ request()->is('dashboard/users*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i> Utilisateurs
                 </a>
-                <a href="{{ route('dashboard.cars.create') }}" class="list-group-item {{ request()->routeIs('dashboard.cars*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.cars.index') }}" class="list-group-item {{ request()->is('dashboard/cars*') ? 'active' : '' }}">
                     <i class="fas fa-car"></i> Véhicules
-                </a>    
-                <a href="{{ route('dashboard.rentals.index') }}" class="list-group-item {{ request()->routeIs('dashboard.rentals*') ? 'active' : '' }}">
+                </a>
+                <a href="{{ route('dashboard.rentals.index') }}" class="list-group-item {{ request()->is('dashboard/rentals*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i> Locations
                 </a>
-                <a href="{{ route('dashboard.contact.messages.index') }}" class="list-group-item {{ request()->routeIs('dashboard.contact.messages*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.transfers.index') }}" class="list-group-item {{ request()->is('dashboard/transfers*') ? 'active' : '' }}">
+                    <i class="fas fa-exchange-alt"></i> Transferts
+                </a>
+                <a href="{{ route('dashboard.contact.messages.index') }}" class="list-group-item {{ request()->is('dashboard/contact-messages*') ? 'active' : '' }}">
                     <i class="fas fa-envelope"></i> Messages
-                    @php
-                        $unreadCount = \App\Models\ContactMessage::unread()->count();
-                    @endphp
-                    @if($unreadCount > 0)
-                        <span class="badge bg-danger rounded-pill float-end me-2">{{ $unreadCount }}</span>
-                    @endif
                 </a>
                 <div class="position-absolute bottom-0 w-100 mb-3">
-                    <a href="{{ route('car.acceuil') }}" class="list-group-item">
+                    <a href="{{ url('/') }}" class="list-group-item">
                         <i class="fas fa-home"></i> Retour au site
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
@@ -235,7 +239,6 @@
     </div>
     <!-- /#wrapper -->
 
-    </script>
     
     <!-- Bootstrap 5.3.0 Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -19,7 +19,16 @@
                 <div class="col-12">
                     <div class="card shadow-sm border-0">
                         <div class="card-body p-4">
-                            <form method="POST" action="{{ route('dashboard.cars.create') }}" enctype="multipart/form-data">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            <form method="POST" action="{{ route('dashboard.cars.store') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row g-4">
                                     <div class="col-md-6">
@@ -53,6 +62,12 @@
                                                 <option value="1">Disponible</option>
                                                 <option value="0">Non disponible</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label for="price_per_day" class="form-label fw-semibold">Prix par jour</label>
+                                            <input type="number" class="form-control form-control-lg" id="price_per_day" name="price_per_day" min="0" step="0.01" required>
                                         </div>
                                     </div>
                                     <div class="col-12">

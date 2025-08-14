@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Car;
+use App\Models\Destination;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -11,14 +12,7 @@ use Carbon\Carbon;
 class CarController extends Controller
 {
 
-    public function detail($id) 
-    {
-        $car = Car::find($id);
-        $rentals = $car->rentals()->where('status', '!=', 3)->get();
-        $drivers = User::where('role', 'driver')->get();
-    
-        return view('detailCars', compact('car', 'rentals', 'drivers'));
-    }
+
     
 
     public function create()
@@ -32,10 +26,12 @@ class CarController extends Controller
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'availability' => 'required|in:0,1',
             'registration_number' => 'required|string|max:20|unique:cars,registration_number',
             'description' => 'nullable|string',
+            'price_per_day' => 'required|numeric|min:0',
         ]);
 
         // Handle file uploads
@@ -56,6 +52,7 @@ class CarController extends Controller
             'availability' => $validated['availability'],
             'registration_number' => $validated['registration_number'],
             'description' => $validated['description'] ?? null,
+            'price_per_day' => $validated['price_per_day'],
         ]);
 
         return redirect()->route('dashboard.cars.index')->with('success', 'Voiture ajoutée avec succès!');
@@ -107,11 +104,12 @@ class CarController extends Controller
         return redirect()->route('dashboard.cars.index')->with('success', 'Voiture supprimée avec succès!');
     }
 
-    public function acceuil() 
+    public function acceuil()
     {
         $cars = Car::take(4)->get();
-    
-        return view('welcome', ['cars' => $cars]);
+        $destinations = Destination::where('is_active', true)->orderBy('type')->orderBy('name')->get()->groupBy('type');
+
+        return view('welcome', ['cars' => $cars, 'destinations' => $destinations]);
     }
 
     public function cars()
@@ -120,21 +118,11 @@ class CarController extends Controller
         return view('cars', ['cars' => $cars]);
     }
 
-    public function search(\Illuminate\Http\Request $request)
+    public function search(Request $request)
     {
-        $validated = $request->validate([
-            'location' => 'nullable|string|max:255',
-            'type' => 'nullable|array',
-            'type.*' => 'string|in:compact,sedan,berline,pickup,suv',
-            'capacity' => 'nullable|array',
-            'capacity.*' => 'integer|in:2,4,5',
-            'start_date' => 'nullable|date|required_with:end_date',
-            'end_date' => 'nullable|date|after_or_equal:start_date|required_with:start_date',
-        ]);
-
         $query = Car::query();
 
-        // Search by location (brand or model)
+        // Handle general text search (from homepage or other forms)
         if ($request->filled('location')) {
             $location = $request->input('location');
             $query->where(function ($q) use ($location) {
@@ -143,37 +131,32 @@ class CarController extends Controller
             });
         }
 
-        // Filter by vehicle type
-        if ($request->filled('type')) {
-            $query->whereIn('type', $request->input('type'));
+        // Handle brand filter from search page
+        if ($request->filled('brand')) {
+            $query->where('brand', 'like', '%' . $request->input('brand') . '%');
         }
 
-        // Filter by capacity
-        if ($request->filled('capacity')) {
-            $query->whereIn('seats', $request->input('capacity'));
+        // Handle price filter from search page
+        if ($request->filled('max_price')) {
+            $query->where('price_per_day', '<=', $request->input('max_price'));
         }
 
-        // Filter by date availability
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
+        // Handle date availability filter
+        if ($request->filled('start-date') && $request->filled('end-date')) {
+            $startDate = Carbon::createFromFormat('d/m/Y', $request->input('start-date'))->startOfDay();
+            $endDate = Carbon::createFromFormat('d/m/Y', $request->input('end-date'))->endOfDay();
 
             $query->whereDoesntHave('rentals', function ($q) use ($startDate, $endDate) {
                 $q->where(function ($query) use ($startDate, $endDate) {
-                    $query->where('rental_date', '<=', $endDate)
-                          ->where('return_date', '>=', $startDate);
+                    $query->where('start_date', '<=', $endDate)
+                          ->where('end_date', '>=', $startDate);
                 });
             });
         }
 
-        $cars = $query->paginate(9);
+        $cars = $query->paginate(9)->withQueryString();
 
-        return view('cars', [
-            'cars' => $cars,
-            'search' => $request->input('location'),
-            'start_date' => $request->input('start_date'),
-            'end_date' => $request->input('end_date'),
-        ]);
+        return view('cars.index', ['cars' => $cars]);
     }
 
     public function getAvailableDrivers(Request $request)
@@ -209,5 +192,20 @@ class CarController extends Controller
     {
         $cars = Car::with(['rentals'])->latest()->paginate(10);
         return view('dashboard.cars.index', compact('cars'));
+    }
+
+    public function publicShow(Car $car)
+    {
+        $rentals = $car->rentals()->where('status', '!=', 3)->get();
+        $drivers = User::where('role', 'driver')->get();
+
+        return view('cars.show', compact('car', 'rentals', 'drivers'));
+    }
+
+    public function show(Car $car)
+    {
+        return view('dashboard.cars.show', [
+            'car' => $car->load(['rentals'])
+        ]);
     }
 }

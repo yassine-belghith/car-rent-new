@@ -143,9 +143,9 @@
 <section class="products">
     <div class="container">
         @if(isset($search) && !empty($search))
-            <h1 class="page-title">Résultats pour : <span style="color:#007aff">"{{ $search }}"</span></h1>
+            <h1 class="page-title">{{ __('messages.search_results_for') }} : <span style="color:#007aff">"{{ $search }}"</span></h1>
         @else
-            <h1 class="page-title">Nos voitures</h1>
+            <h1 class="page-title">{{ __('messages.our_vehicles') }}</h1>
         @endif
 
         <form action="{{ route('car.search') }}" method="GET">
@@ -155,11 +155,11 @@
                     <div class="filtre-container">
                         <div class="filtre">
                             <div class="mb-4">
-                                <h5><i class="fas fa-filter me-2" style="color:#007aff"></i>Filtres</h5>
+                                <h5><i class="fas fa-filter me-2" style="color:#007aff"></i>{{ __('messages.filters') }}</h5>
 
                                 <!-- Vehicle Type -->
                                 <div class="filter-section">
-                                    <h6>Type de véhicule :</h6>
+                                    <h6>{{ __('messages.vehicle_type') }} :</h6>
                                     @foreach(['compact','sedan','berline','pickup','suv'] as $type)
                                         <div class="form-check mb-2">
                                             <input class="form-check-input" type="checkbox" name="type[]" id="{{ $type }}Checkbox" value="{{ $type }}" {{ in_array($type, request('type', [])) ? 'checked' : '' }}>
@@ -171,20 +171,20 @@
 
                             <!-- Dates -->
                             <div class="filter-section mb-4">
-                                <h6>Date de disponibilité :</h6>
+                                <h6>{{ __('messages.availability_date') }} :</h6>
                                 <div class="mb-2">
-                                    <label for="start_date" class="form-label small">Début</label>
+                                    <label for="start_date" class="form-label small">{{ __('messages.start_date') }}</label>
                                     <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}">
                                 </div>
                                 <div>
-                                    <label for="end_date" class="form-label small">Fin</label>
+                                    <label for="end_date" class="form-label small">{{ __('messages.end_date') }}</label>
                                     <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date') }}">
                                 </div>
                             </div>
 
                             <!-- Capacity -->
                             <div class="filter-section mb-4">
-                                <h6>Capacité :</h6>
+                                <h6>{{ __('messages.capacity') }} :</h6>
                                 @foreach(['2'=>'2 personnes','4'=>'4 personnes','5'=>'5 personnes'] as $cap => $label)
                                     <div class="form-check mb-2">
                                         <input class="form-check-input" type="checkbox" name="capacity[]" id="persons{{ $cap }}Checkbox" value="{{ $cap }}" {{ in_array($cap, request('capacity', [])) ? 'checked' : '' }}>
@@ -193,7 +193,7 @@
                                 @endforeach
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100" style="background:#007aff;border:none;border-radius:999px;">Appliquer les filtres</button>
+                            <button type="submit" class="btn btn-primary w-100" style="background:#007aff;border:none;border-radius:999px;">{{ __('messages.apply_filters') }}</button>
                         </div>
                     </div>
                 </div>
@@ -213,7 +213,7 @@
                     <!-- Search bar -->
                     <div class="search-container mb-3">
                         <div class="input-group">
-                            <input type="text" id="search" name="location" class="form-control" placeholder="Rechercher une voiture..." value="{{ $search ?? '' }}">
+                            <input type="text" id="search" name="location" class="form-control" placeholder="{{ __('messages.search_vehicles') }}..." value="{{ $search ?? '' }}">
                             <button class="btn" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -225,7 +225,9 @@
                         @forelse ($cars as $car)
                             <div class="item">
                                 <div class="car-image">
-                                    <img src="{{ asset($car->images) }}" alt="{{ $car->brand }} {{ $car->model }}">
+                                    @if($car->images && !empty($car->images[0]))
+                                    <img src="{{ asset('storage/' . $car->images[0]) }}" alt="{{ $car->brand }} {{ $car->model }}">
+                                @endif
                                 </div>
                                 <div class="item-content">
                                     <div>
@@ -233,20 +235,20 @@
                                         <div class="car-details">
                                             <div class="detail-item">
                                                 <i class="fas fa-car me-2"></i>
-                                                <span>Type: {{ $car->type ?? 'Standard' }}</span>
+                                                <span>{{ __('messages.type') }}: {{ $car->type ?? 'Standard' }}</span>
                                             </div>
                                             <div class="detail-item">
                                                 <i class="fas fa-users me-2"></i>
-                                                <span>Sièges: {{ $car->seats ?? 4 }} personnes</span>
+                                                <span>{{ __('messages.seats') }}: {{ $car->seats ?? 4 }} {{ __('messages.people') }}</span>
                                             </div>
-                                            <div class="detail-item price">
+                                                                                        <div class="detail-item price">
                                                 <i class="fas fa-tag me-2"></i>
-                                                <span>À partir de <strong>19$</strong> /jour</span>
+                                                <span>{{ __('messages.from') }} <strong>{{ number_format(App\Helpers\CurrencyHelper::convert($car->price_per_day), 2) }} {{ session('currency', 'TND') }}</strong> /{{ __('messages.day') }}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="{{ route('cars.detail', ['car' => $car->id]) }}" class="btn-voir-plus">
-                                        Voir les détails <i class="fas fa-arrow-right ms-2"></i>
+                                    <a href="{{ route('cars.detail', $car) }}" class="btn-voir-plus">
+                                        {{ __('messages.view_details') }} <i class="fas fa-arrow-right ms-2"></i>
                                     </a>
                                 </div>
                             </div>
@@ -254,11 +256,11 @@
                             <div class="no-results text-center py-5">
                                 <i class="fas fa-car-crash fa-3x mb-3"></i>
                                 @if(isset($search) && !empty($search))
-                                    <h4>Aucun véhicule trouvé pour "{{ $search }}"</h4>
-                                    <p class="text-muted">Essayez d'autres mots-clés ou modifiez les filtres.</p>
+                                    <h4>{{ __('messages.no_vehicles_found_for') }} "{{ $search }}"</h4>
+                                    <p class="lead text-white-50">{{ __('messages.discover_our_fleet') }}</p>
                                 @else
-                                    <h4>Aucun véhicule disponible pour le moment</h4>
-                                    <p class="text-muted">Veuillez revenir plus tard.</p>
+                                    <h4>{{ __('messages.no_vehicles_available') }}</h4>
+                                    <p class="text-muted">{{ __('messages.try_again_later') }}</p>
                                 @endif
                             </div>
                         @endforelse
