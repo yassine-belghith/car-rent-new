@@ -55,7 +55,6 @@
             --shadow-layered: 0 0 1px 0 rgba(58, 59, 69, 0.1), 0 2px 4px 0 rgba(58, 59, 69, 0.1);
             --border-color: #e3e6f0;
         }
-
         body {
             font-family: var(--font-family-sans-serif);
             background-color: var(--light);
@@ -330,7 +329,7 @@
             // Close sidebar when clicking outside on mobile
             document.addEventListener('click', function(e) {
                 if (window.innerWidth <= 991.98 && 
-                    !sidebar.contains(e.target) && 
+                    !sidebar.contains(e.target) &&
                     e.target !== toggleBtn && 
                     !toggleBtn.contains(e.target) &&
                     !e.target.classList.contains('dropdown-toggle')) {
